@@ -644,7 +644,7 @@
                 }
 
                 if (contadorMes >= limiteMensualPermitido) {
-                    alert(`⚠️ Límite mensual excedido para el equipo de ${miJefe}:\n\nYa hay ${contadorMes} funcionario(s) programados en el mes de ${anioMes}. El límite proporcional autorizado para este equipo es de ${limiteMensualPermitido} persona(s) por mes.`);
+                    alert(`⚠️ Capacidad de programación alcanzada para el equipo de ${miJefe}:\n\nSe ha superado el número máximo de funcionarios programados para el periodo ${anioMes} (${contadorMes} de ${limiteMensualPermitido} cupos permitidos).\n\nLe recomendamos seleccionar otras fechas para su descanso o comunicarse con la Dirección de Talento Humano para validar una excepción.`);
                     return false;
                 }
             }
