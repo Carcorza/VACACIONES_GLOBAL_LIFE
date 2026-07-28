@@ -19,7 +19,6 @@
     <header class="institutional-gradient text-white shadow-lg border-b border-blue-900">
         <div class="max-w-6xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center space-x-3 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/10 shadow-inner">
-                <!-- Única Imagen Institucional -->
                 <img src="https://lh3.googleusercontent.com/d/1MjgNe-zgyiBPShxkwT5053JND1hc4jY8" alt="Logo Institucional" class="h-10 w-auto object-contain">
             </div>
             <div>
@@ -71,13 +70,13 @@
             <!-- ALERTA SI YA TIENE PERIODO ASIGNADO CON DETALLE -->
             <div id="alertaYaRegistrado" class="bg-amber-50 border border-amber-200 p-5 rounded-2xl text-xs text-amber-900 space-y-3 hidden shadow-sm">
                 <div class="font-bold text-sm flex items-center justify-between">
-                    <span class="flex items-center gap-2">⚠️ Ya tienes periodos de vacaciones registrados.</span>
+                    <span class="flex items-center gap-2">⚠️ Ya tienes registros en tu periodo de vacaciones.</span>
                     <span id="badgePendientes" class="bg-amber-200 text-amber-900 px-3 py-1 rounded-lg text-xs font-bold">Días pendientes: 0 / 15</span>
                 </div>
                 <p id="detalleAsignacion" class="font-medium text-amber-800 pl-6 leading-relaxed"></p>
                 
                 <div id="seccionModificarBoton" class="pt-3 border-t border-amber-200 flex flex-wrap items-center justify-between gap-3 hidden">
-                    <span id="textoModificarAviso" class="text-amber-800 font-medium">⚠️ Has completado tus 15 días.</span>
+                    <span id="textoModificarAviso" class="text-amber-800 font-medium">⚠️ Has completado tus días disponibles.</span>
                     <button id="btnModificarAccion" onclick="habilitarModificacion()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-4 py-2 rounded-xl transition shadow-sm">
                         Modificar Fechas 🔓
                     </button>
@@ -89,56 +88,26 @@
                 <span id="textoDiasPendientesGeneral" class="text-xs font-bold text-blue-700 bg-white px-3 py-1.5 rounded-xl shadow-sm">Tienes 15 días hábiles disponibles para programar.</span>
             </div>
 
-            <!-- CONTENEDOR DE CONFIGURACIÓN -->
+            <!-- CONTENEDOR UNIFICADO DE CONFIGURACIÓN -->
             <div id="seccionConfiguracion" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6 hidden">
-                <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wide border-b pb-3 border-slate-100">Configuración de Programación</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Modalidad de Disfrute</label>
-                        <select id="modalidadSelect" onchange="cambiarModalidad()" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-600 focus:outline-none bg-white font-medium text-slate-700">
-                            <option value="1">1 Periodo Completo (15 días hábiles)</option>
-                            <option value="3">Fraccionado en Bloques (Máximo 15 días en total)</option>
-                            <option value="dinero">Compensar en Dinero</option>
-                        </select>
-                    </div>
-                </div>
+                <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wide border-b pb-3 border-slate-100">Configuración Unificada de Programación</h3>
 
-                <!-- CONTENEDOR PARA 1 PERIODO -->
-                <div id="bloqueUnico" class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Periodo Completo (15 Días Hábiles)</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Inicio Vacaciones</label>
-                            <input type="date" id="uniInicio" onchange="calcularFechasVacaciones(1)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Fin Vacaciones</label>
-                            <input type="date" id="uniFin" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-slate-600 font-medium">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Regreso a Laborar</label>
-                            <input type="date" id="uniRegreso" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-emerald-700 font-bold">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CONTENEDOR PARA BLOQUES FRACCIONADOS DINÁMICOS -->
-                <div id="bloquesTres" class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200 hidden">
+                <!-- BLOQUE 1: FRACCIONAMIENTO INTELIGENTE (B1, B2, B3) -->
+                <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
                     <div class="flex justify-between items-center">
-                        <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Fraccionamiento Inteligente</h4>
+                        <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Fraccionamiento de Descanso</h4>
                         <span id="contadorTotalDias" class="text-xs font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-lg">Total días: 0 / 15</span>
                     </div>
                     
                     <!-- Bloque 1 -->
-                    <div id="containerB1" class="grid grid-cols-1 md:grid-cols-4 gap-4 border-b pb-3 border-slate-200 items-end">
+                    <div id="seccionBloque1" class="grid grid-cols-1 md:grid-cols-4 gap-4 border-b pb-3 border-slate-200 items-end">
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Días</label>
-                            <input type="number" id="b1Dias" value="" min="1" max="15" oninput="actualizarSumaDias()" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
+                            <input type="number" id="b1Dias" min="1" max="15" oninput="actualizarBloquePorDias(1)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Inicio</label>
-                            <input type="date" id="b1Inicio" onchange="calcularBloque(1)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
+                            <input type="date" id="b1Inicio" onchange="calcularBloquePorFechas(1)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Fin</label>
@@ -151,14 +120,14 @@
                     </div>
 
                     <!-- Bloque 2 -->
-                    <div id="seccionBloque2" class="grid grid-cols-1 md:grid-cols-4 gap-4 border-b pb-3 border-slate-200 items-end">
+                    <div id="seccionBloque2" class="grid grid-cols-1 md:grid-cols-4 gap-4 border-b pb-3 border-slate-200 items-end hidden">
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 2 - Días</label>
-                            <input type="number" id="b2Dias" value="" min="1" max="15" oninput="actualizarSumaDias()" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
+                            <input type="number" id="b2Dias" min="1" max="15" oninput="actualizarBloquePorDias(2)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 2 - Inicio</label>
-                            <input type="date" id="b2Inicio" onchange="calcularBloque(2)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
+                            <input type="date" id="b2Inicio" onchange="calcularBloquePorFechas(2)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 2 - Fin</label>
@@ -171,14 +140,14 @@
                     </div>
 
                     <!-- Bloque 3 -->
-                    <div id="seccionBloque3" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div id="seccionBloque3" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end hidden">
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 3 - Días</label>
-                            <input type="number" id="b3Dias" value="" min="1" max="15" oninput="actualizarSumaDias()" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white font-bold text-blue-700">
+                            <input type="number" id="b3Dias" min="1" max="15" oninput="actualizarBloquePorDias(3)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white font-bold text-blue-700">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 3 - Inicio</label>
-                            <input type="date" id="b3Inicio" onchange="calcularBloque(3)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
+                            <input type="date" id="b3Inicio" onchange="calcularBloquePorFechas(3)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 3 - Fin</label>
@@ -191,12 +160,19 @@
                     </div>
                 </div>
 
-                <!-- CONTENEDOR PARA DINERO -->
-                <div id="bloqueDinero" class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200 hidden">
+                <!-- BLOQUE 2: COMPENSACIÓN EN DINERO -->
+                <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
                     <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Compensación en Dinero</h4>
                     <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">Días a Compensar (Escribe la cantidad deseada)</label>
-                        <input type="number" id="inputDinero" min="1" max="15" value="" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white font-bold text-blue-700 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Días a Compensar (Nuevos a solicitar)</label>
+                        <input type="number" id="inputDineroNuevos" min="0" value="0" oninput="actualizarAcumuladoDinero()" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white font-bold text-blue-700 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                    </div>
+                    <div id="alertaExcesoDinero" class="text-xs text-rose-600 font-semibold hidden">
+                        ⚠️ No puedes solicitar más días de los que tienes pendientes (máximo permitido: <span id="spanMaximoPermitido">0</span> días).
+                    </div>
+                    <div class="text-xs text-slate-600 font-medium bg-blue-50 p-3 rounded-lg border border-blue-100 flex justify-between items-center">
+                        <span>Total acumulado en dinero que se guardará:</span>
+                        <span id="labelTotalDineroAcumulado" class="font-bold text-blue-900 text-sm">0 días (0 previos + 0 nuevos)</span>
                     </div>
                 </div>
 
@@ -222,9 +198,9 @@
 
     <script>
         const sheetID = '1pCFrPSBBh3yxhiBE13GXHUyHADCWH9IG01Wkk7hs-mU';
-        const appsScriptURL = 'https://script.google.com/macros/s/AKfycbzqqadvX-YBz-ubkvWlvm7mtTn5kAmkezzZd9axN0gD_faSOstSRK8vWmHSsaIYgO-b/exec';
+        const appsScriptURL = 'https://script.google.com/macros/s/AKfycbx18pss4mD9ZpLnhC9JzQHDMANU-qfkwyCzPwbvKW-0NUpmct06Deqjw86t1qC-AO1F/exec';
         let empleadoActual = null;
-        let diasMaximosPermitidos = 15;
+        let dineroBaseOriginal = 0;
         let todosLosRegistrosGlobal = [];
 
         const festivosColombia = [
@@ -238,28 +214,13 @@
             '2027-11-15', '2027-12-08', '2027-12-25'
         ];
 
-        function esFestivoOFindesemana(date) {
+        function esFestivoOdomingo(date) {
             const dayOfWeek = date.getDay();
-            if (dayOfWeek === 0 || dayOfWeek === 6) return true;
+            if (dayOfWeek === 0) return true;
             const yyyy = date.getFullYear();
             const mm = String(date.getMonth() + 1).padStart(2, '0');
             const dd = String(date.getDate()).padStart(2, '0');
             return festivosColombia.includes(`${yyyy}-${mm}-${dd}`);
-        }
-
-        function contarDiasHabilesEntreFechas(fInicioStr, fFinStr) {
-            if (!fInicioStr || !fFinStr) return 0;
-            let current = new Date(fInicioStr + 'T00:00:00');
-            let fin = new Date(fFinStr + 'T00:00:00');
-            let dias = 0;
-
-            while (current <= fin) {
-                if (!esFestivoOFindesemana(current)) {
-                    dias++;
-                }
-                current.setDate(current.getDate() + 1);
-            }
-            return dias;
         }
 
         function calcularFechasHabiles(fechaInicioStr, diasHabiles) {
@@ -269,7 +230,7 @@
             let ultimaFechaVacacion = new Date(current);
 
             while (diasContados < diasHabiles) {
-                if (!esFestivoOFindesemana(current)) {
+                if (!esFestivoOdomingo(current)) {
                     diasContados++;
                 }
                 ultimaFechaVacacion = new Date(current);
@@ -281,7 +242,7 @@
             let regreso = new Date(ultimaFechaVacacion);
             do {
                 regreso.setDate(regreso.getDate() + 1);
-            } while (esFestivoOFindesemana(regreso));
+            } while (esFestivoOdomingo(regreso));
 
             return {
                 fin: ultimaFechaVacacion.toISOString().split('T')[0],
@@ -289,25 +250,108 @@
             };
         }
 
-        function actualizarSumaDias() {
+        function contarDiasHabilesEntreFechas(fInicioStr, fFinStr) {
+            if (!fInicioStr || !fFinStr) return 0;
+            let current = new Date(fInicioStr + 'T00:00:00');
+            let fin = new Date(fFinStr + 'T00:00:00');
+            let dias = 0;
+            while (current <= fin) {
+                if (!esFestivoOdomingo(current)) dias++;
+                current.setDate(current.getDate() + 1);
+            }
+            return dias;
+        }
+
+        function actualizarGlobal() {
             let d1 = parseInt(document.getElementById('b1Dias').value) || 0;
             let d2 = parseInt(document.getElementById('b2Dias').value) || 0;
             let d3 = parseInt(document.getElementById('b3Dias').value) || 0;
-            let total = d1 + d2 + d3;
-            document.getElementById('contadorTotalDias').textContent = `Total días: ${total} / 15`;
-            
-            if (total > 15) {
-                document.getElementById('contadorTotalDias').className = "text-xs font-bold text-rose-600 bg-rose-50 px-3 py-1 rounded-lg";
+            let dinNuevos = parseInt(document.getElementById('inputDineroNuevos').value) || 0;
+
+            let sec2 = document.getElementById('seccionBloque2');
+            let sec3 = document.getElementById('seccionBloque3');
+
+            let totalBloques = d1;
+            if (d1 > 0 && d1 < 15) {
+                sec2.classList.remove('hidden');
+                totalBloques += d2;
             } else {
-                document.getElementById('contadorTotalDias').className = "text-xs font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-lg";
+                sec2.classList.add('hidden');
+                document.getElementById('b2Dias').value = '';
+                document.getElementById('b2Inicio').value = '';
+                document.getElementById('b2Fin').value = '';
+                document.getElementById('b2Regreso').value = '';
+                d2 = 0;
             }
+
+            if (totalBloques > 0 && totalBloques < 15 && d1 > 0 && d2 > 0) {
+                sec3.classList.remove('hidden');
+                totalBloques = d1 + d2 + d3;
+            } else {
+                sec3.classList.add('hidden');
+                document.getElementById('b3Dias').value = '';
+                document.getElementById('b3Inicio').value = '';
+                document.getElementById('b3Fin').value = '';
+                document.getElementById('b3Regreso').value = '';
+                d3 = 0;
+            }
+
+            let maxPermitidoTotal = 15;
+            let granTotal = totalBloques + dineroBaseOriginal + dinNuevos;
+
+            if (granTotal > maxPermitidoTotal) {
+                let exceso = granTotal - maxPermitidoTotal;
+                if (dinNuevos >= exceso) {
+                    dinNuevos -= exceso;
+                    document.getElementById('inputDineroNuevos').value = dinNuevos;
+                    document.getElementById('alertaExcesoDinero').classList.remove('hidden');
+                } else {
+                    alert(`⚠️ La suma total de días entre bloques y dinero no puede superar los 15 días hábiles.`);
+                    document.getElementById('b3Dias').value = '';
+                    document.getElementById('b3Inicio').value = '';
+                    document.getElementById('b3Fin').value = '';
+                    document.getElementById('b3Regreso').value = '';
+                }
+                granTotal = 15;
+            } else {
+                document.getElementById('alertaExcesoDinero').classList.add('hidden');
+            }
+
+            document.getElementById('contadorTotalDias').textContent = `Total días bloques: ${totalBloques} / 15`;
+            
+            let totalAcumuladoDinero = dineroBaseOriginal + dinNuevos;
+            document.getElementById('labelTotalDineroAcumulado').textContent = `${totalAcumuladoDinero} días (${dineroBaseOriginal} previos + ${dinNuevos} nuevos)`;
+
+            let pendientesBadge = 15 - totalBloques - totalAcumuladoDinero;
+            if (pendientesBadge < 0) pendientesBadge = 0;
+            document.getElementById('badgePendientes').textContent = `Días pendientes: ${pendientesBadge} / 15`;
         }
 
-        function calcularBloque(num) {
+        function actualizarBloquePorDias(num) {
             let diasInput = parseInt(document.getElementById(`b${num}Dias`).value) || 0;
+            let inicio = document.getElementById(`b${num}Inicio`).value;
+            
+            if (!inicio || diasInput <= 0) {
+                document.getElementById(`b${num}Fin`).value = '';
+                document.getElementById(`b${num}Regreso`).value = '';
+            } else {
+                let res = calcularFechasHabiles(inicio, diasInput);
+                document.getElementById(`b${num}Fin`).value = res.fin;
+                document.getElementById(`b${num}Regreso`).value = res.regreso;
+            }
+            actualizarGlobal();
+        }
+
+        function calcularBloquePorFechas(num) {
             let inicioInput = document.getElementById(`b${num}Inicio`);
             let inicio = inicioInput.value;
-            if (!inicio || diasInput <= 0) return;
+            
+            if (!inicio) {
+                document.getElementById(`b${num}Fin`).value = '';
+                document.getElementById(`b${num}Regreso`).value = '';
+                actualizarGlobal();
+                return;
+            }
 
             if (num === 2) {
                 let b1Regreso = document.getElementById('b1Regreso').value;
@@ -316,6 +360,7 @@
                     inicioInput.value = '';
                     document.getElementById('b2Fin').value = '';
                     document.getElementById('b2Regreso').value = '';
+                    actualizarGlobal();
                     return;
                 }
             } else if (num === 3) {
@@ -325,51 +370,26 @@
                     inicioInput.value = '';
                     document.getElementById('b3Fin').value = '';
                     document.getElementById('b3Regreso').value = '';
+                    actualizarGlobal();
                     return;
                 }
             }
 
-            let res = calcularFechasHabiles(inicio, diasInput);
-            document.getElementById(`b${num}Fin`).value = res.fin;
-            document.getElementById(`b${num}Regreso`).value = res.regreso;
+            let diasInput = parseInt(document.getElementById(`b${num}Dias`).value) || 0;
+            if (diasInput > 0) {
+                let res = calcularFechasHabiles(inicio, diasInput);
+                document.getElementById(`b${num}Fin`).value = res.fin;
+                document.getElementById(`b${num}Regreso`).value = res.regreso;
+            }
+            actualizarGlobal();
+        }
+
+        function actualizarAcumuladoDinero() {
+            actualizarGlobal();
         }
 
         function habilitarModificacion() {
             document.getElementById('seccionConfiguracion').classList.remove('hidden');
-            document.getElementById('b1Dias').readOnly = false;
-            document.getElementById('b1Inicio').readOnly = false;
-            document.getElementById('seccionBloque2').classList.remove('hidden');
-            document.getElementById('b2Dias').readOnly = false;
-            document.getElementById('b2Inicio').readOnly = false;
-            document.getElementById('seccionBloque3').classList.remove('hidden');
-            document.getElementById('b3Dias').readOnly = false;
-            document.getElementById('b3Inicio').readOnly = false;
-            document.getElementById('modalidadSelect').value = '3';
-            cambiarModalidad();
-        }
-
-        function limpiarFormularioEnCeros() {
-            document.getElementById('uniInicio').value = '';
-            document.getElementById('uniFin').value = '';
-            document.getElementById('uniRegreso').value = '';
-
-            document.getElementById('b1Dias').value = '';
-            document.getElementById('b1Inicio').value = '';
-            document.getElementById('b1Fin').value = '';
-            document.getElementById('b1Regreso').value = '';
-
-            document.getElementById('b2Dias').value = '';
-            document.getElementById('b2Inicio').value = '';
-            document.getElementById('b2Fin').value = '';
-            document.getElementById('b2Regreso').value = '';
-
-            document.getElementById('b3Dias').value = '';
-            document.getElementById('b3Inicio').value = '';
-            document.getElementById('b3Fin').value = '';
-            document.getElementById('b3Regreso').value = '';
-
-            document.getElementById('inputDinero').value = '';
-            actualizarSumaDias();
         }
 
         function validarCedulaSistema() {
@@ -384,12 +404,18 @@
 
             errDiv.classList.add('hidden');
 
-            const jsonpURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?sheet=Vacaciones&tqx=responseHandler:handleVacacionesData`;
+            const cacheBuster = new Date().getTime();
+            const jsonpURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?sheet=Vacaciones&tqx=responseHandler:handleVacacionesData&_=${cacheBuster}`;
+            
+            const scriptOld = document.getElementById('jsonpScriptTag');
+            if (scriptOld) scriptOld.remove();
+
             const script = document.createElement('script');
+            script.id = 'jsonpScriptTag';
             script.src = jsonpURL;
             script.onerror = function() {
                 errDiv.textContent = "Error al conectar con la hoja de Google Sheets.";
-                errDiv.classList.add('hidden');
+                errDiv.classList.remove('hidden');
             };
 
             window.handleVacacionesData = function(response) {
@@ -415,7 +441,7 @@
                     todosLosRegistrosGlobal = registros;
 
                     let encontrado = registros.find(item => {
-                        let doc = item['DOCUMENTO'] || item['DOC'] || '';
+                        let doc = String(item['DOCUMENTO'] || item['DOC'] || '').trim();
                         return doc === cedulaInput;
                     });
 
@@ -437,16 +463,19 @@
 
                     let b3Inicio = encontrado['TERCER FECHA'] || '';
                     let b3Fin = encontrado['FIN TERCERA FECHA'] || encontrado['FIN TERCER FECHA'] || '';
-                    let b3Regreso = encontrado['REGRESO TERCERA FEHCA'] || encontrado['REGRESO TERCERA FECHA'] || encontrado['REGRESO TERCER FEHCA'] || encontrado['REGRESO TERCER FECHA'] || '';
+                    let b3Regreso = encontrado['REGRESO TERCERA FEHCA'] || encontrado['REGRESO TERCERA FECHA'] || '';
                     
-                    let valorDineroStr = "";
+                    dineroBaseOriginal = 0;
                     for (let key in encontrado) {
-                        if (key.includes('DINERO')) {
-                            valorDineroStr = encontrado[key];
-                            break;
+                        if (key.includes('DINERO') || key === 'Q') {
+                            let valStr = String(encontrado[key]).trim();
+                            if (valStr !== "") {
+                                let valNum = parseInt(valStr.replace(/\D/g, '')) || 0;
+                                dineroBaseOriginal = valNum;
+                                break;
+                            }
                         }
                     }
-                    let dineroRegistrado = parseInt(String(valorDineroStr).replace(/\D/g, '')) || 0;
 
                     let valorModificar = "";
                     for (let key in encontrado) {
@@ -458,7 +487,7 @@
                     let permiteModificar = (String(valorModificar).trim().toUpperCase() === 'SI');
 
                     let detalleTexto = "";
-                    let diasProgramados = 0;
+                    let diasProgramadosBase = 0;
 
                     let tieneBloque1 = false;
                     let tieneBloque2 = false;
@@ -466,42 +495,39 @@
 
                     if (fInicio && fFin) {
                         let dBlock1 = contarDiasHabilesEntreFechas(fInicio, fFin);
-                        diasProgramados += dBlock1;
+                        diasProgramadosBase += dBlock1;
                         tieneBloque1 = true;
-                        detalleTexto += `• Periodo / Bloque 1: Del ${fInicio} al ${fFin} (${dBlock1} días hábiles - Regresa: ${fRegreso})<br>`;
+                        detalleTexto += `• Bloque 1: Del ${fInicio} al ${fFin} (${dBlock1} días hábiles - Regresa: ${fRegreso})<br>`;
                     }
                     if (b2Inicio && b2Fin) {
                         let dBlock2 = contarDiasHabilesEntreFechas(b2Inicio, b2Fin);
-                        diasProgramados += dBlock2;
+                        diasProgramadosBase += dBlock2;
                         tieneBloque2 = true;
                         detalleTexto += `• Bloque 2: Del ${b2Inicio} al ${b2Fin} (${dBlock2} días hábiles - Regresa: ${b2Regreso})<br>`;
                     }
                     if (b3Inicio && b3Fin) {
                         let dBlock3 = contarDiasHabilesEntreFechas(b3Inicio, b3Fin);
-                        diasProgramados += dBlock3;
+                        diasProgramadosBase += dBlock3;
                         tieneBloque3 = true;
                         detalleTexto += `• Bloque 3: Del ${b3Inicio} al ${b3Fin} (${dBlock3} días hábiles - Regresa: ${b3Regreso})<br>`;
                     }
-                    
-                    if (dineroRegistrado > 0) {
-                        diasProgramados += dineroRegistrado;
-                        detalleTexto += `• Compensación en Dinero: ${dineroRegistrado} días liquidados<br>`;
+                    if (dineroBaseOriginal > 0) {
+                        diasProgramadosBase += dineroBaseOriginal;
+                        detalleTexto += `• Compensación en Dinero: ${dineroBaseOriginal} días liquidados<br>`;
                     }
 
-                    diasMaximosPermitidos = 15 - diasProgramados;
-                    if (diasMaximosPermitidos < 0) diasMaximosPermitidos = 0;
+                    if (diasProgramadosBase > 15) diasProgramadosBase = 15;
+                    let diasPendientesIniciales = 15 - diasProgramadosBase;
+                    if (diasPendientesIniciales < 0) diasPendientesIniciales = 0;
 
                     const seccionConfig = document.getElementById('seccionConfiguracion');
                     const seccionModBtn = document.getElementById('seccionModificarBoton');
 
                     if (detalleTexto !== "") {
                         document.getElementById('detalleAsignacion').innerHTML = detalleTexto;
-                        document.getElementById('badgePendientes').textContent = `Días pendientes: ${diasMaximosPermitidos} / 15`;
+                        document.getElementById('badgePendientes').textContent = `Días pendientes: ${diasPendientesIniciales} / 15`;
                         document.getElementById('alertaYaRegistrado').classList.remove('hidden');
                         document.getElementById('panelPendientesGeneral').classList.add('hidden');
-                        
-                        document.getElementById('modalidadSelect').value = '3';
-                        cambiarModalidad();
 
                         if (tieneBloque1) {
                             document.getElementById('b1Dias').value = contarDiasHabilesEntreFechas(fInicio, fFin);
@@ -509,35 +535,23 @@
                             document.getElementById('b1Fin').value = fFin;
                             document.getElementById('b1Regreso').value = fRegreso;
                         }
-
-                        let sec2 = document.getElementById('seccionBloque2');
-                        sec2.classList.remove('hidden');
                         if (tieneBloque2) {
                             document.getElementById('b2Dias').value = contarDiasHabilesEntreFechas(b2Inicio, b2Fin);
                             document.getElementById('b2Inicio').value = b2Inicio;
                             document.getElementById('b2Fin').value = b2Fin;
                             document.getElementById('b2Regreso').value = b2Regreso;
                         }
-
-                        let sec3 = document.getElementById('seccionBloque3');
-                        if (tieneBloque3 || diasMaximosPermitidos > 0) {
-                            sec3.classList.remove('hidden');
-                            if (tieneBloque3) {
-                                document.getElementById('b3Dias').value = contarDiasHabilesEntreFechas(b3Inicio, b3Fin);
-                                document.getElementById('b3Inicio').value = b3Inicio;
-                                document.getElementById('b3Fin').value = b3Fin;
-                                document.getElementById('b3Regreso').value = b3Regreso;
-                            } else {
-                                document.getElementById('b3Dias').value = '';
-                                document.getElementById('b3Inicio').value = '';
-                                document.getElementById('b3Fin').value = '';
-                                document.getElementById('b3Regreso').value = '';
-                            }
+                        if (tieneBloque3) {
+                            document.getElementById('b3Dias').value = contarDiasHabilesEntreFechas(b3Inicio, b3Fin);
+                            document.getElementById('b3Inicio').value = b3Inicio;
+                            document.getElementById('b3Fin').value = b3Fin;
+                            document.getElementById('b3Regreso').value = b3Regreso;
                         }
 
-                        actualizarSumaDias();
+                        document.getElementById('inputDineroNuevos').value = 0;
+                        actualizarGlobal();
 
-                        if (diasMaximosPermitidos === 0) {
+                        if (diasPendientesIniciales === 0) {
                             seccionConfig.classList.add('hidden');
                             if (permiteModificar) {
                                 seccionModBtn.classList.remove('hidden');
@@ -552,12 +566,14 @@
                         seccionConfig.classList.remove('hidden');
                         document.getElementById('alertaYaRegistrado').classList.add('hidden');
                         document.getElementById('panelPendientesGeneral').classList.remove('hidden');
-                        document.getElementById('textoDiasPendientesGeneral').textContent = `Tienes 15 días hábiles disponibles para programar.`;
+                        document.getElementById('textoDiasPendientesGeneral').textContent = `Tienes ${diasPendientesIniciales} días hábiles disponibles para programar.`;
                         
-                        limpiarFormularioEnCeros();
-                        diasMaximosPermitidos = 15;
-                        document.getElementById('modalidadSelect').value = '1';
-                        cambiarModalidad();
+                        document.getElementById('b1Dias').value = '';
+                        document.getElementById('b1Inicio').value = '';
+                        document.getElementById('b1Fin').value = '';
+                        document.getElementById('b1Regreso').value = '';
+                        document.getElementById('inputDineroNuevos').value = 0;
+                        actualizarGlobal();
                     }
 
                     document.getElementById('loginScreen').classList.add('hidden');
@@ -572,23 +588,6 @@
                 }
             };
             document.head.appendChild(script);
-        }
-
-        function cambiarModalidad() {
-            const mod = document.getElementById('modalidadSelect').value;
-            document.getElementById('bloqueUnico').classList.add('hidden');
-            document.getElementById('bloquesTres').classList.add('hidden');
-            document.getElementById('bloqueDinero').classList.add('hidden');
-
-            if (mod === '1') {
-                document.getElementById('bloqueUnico').classList.remove('hidden');
-            } else if (mod === '3') {
-                document.getElementById('bloquesTres').classList.remove('hidden');
-            } else if (mod === 'dinero') {
-                document.getElementById('bloqueDinero').classList.remove('hidden');
-                document.getElementById('inputDinero').value = diasMaximosPermitidos;
-                document.getElementById('inputDinero').max = diasMaximosPermitidos;
-            }
         }
 
         function validarCupoPorMesYJefe(fechasANuevas) {
@@ -653,40 +652,38 @@
         }
 
         function guardarVacaciones() {
-            const mod = document.getElementById('modalidadSelect').value;
             const msgDiv = document.getElementById('formMsg');
             
-            let fechasAValidar = [];
-            if (mod === '1') {
-                let uIni = document.getElementById('uniInicio').value;
-                let uFin = document.getElementById('uniFin').value;
-                if (!uIni || !uFin) {
-                    alert("⚠️ Por favor selecciona la fecha de inicio.");
-                    return;
-                }
-                fechasAValidar.push({ inicio: uIni, fin: uFin });
-            } else if (mod === '3') {
-                let d1 = parseInt(document.getElementById('b1Dias').value) || 0;
-                let d2 = parseInt(document.getElementById('b2Dias').value) || 0;
-                let d3 = parseInt(document.getElementById('b3Dias').value) || 0;
-                
-                if ((d1 + d2 + d3) !== 15) {
-                    alert("⚠️ La suma total de los días de los bloques debe ser exactamente 15.");
-                    return;
-                }
+            let b1i = document.getElementById('b1Inicio').value;
+            let b1f = document.getElementById('b1Fin').value;
+            let b1r = document.getElementById('b1Regreso').value;
 
-                let b1i = document.getElementById('b1Inicio').value;
-                let b1f = document.getElementById('b1Fin').value;
-                if(b1i && b1f) fechasAValidar.push({ inicio: b1i, fin: b1f });
+            let b2i = document.getElementById('seccionBloque2').classList.contains('hidden') ? '' : document.getElementById('b2Inicio').value;
+            let b2f = document.getElementById('seccionBloque2').classList.contains('hidden') ? '' : document.getElementById('b2Fin').value;
+            let b2r = document.getElementById('seccionBloque2').classList.contains('hidden') ? '' : document.getElementById('b2Regreso').value;
 
-                let b2i = document.getElementById('b2Inicio').value;
-                let b2f = document.getElementById('b2Fin').value;
-                if(b2i && b2f) fechasAValidar.push({ inicio: b2i, fin: b2f });
+            let b3i = document.getElementById('seccionBloque3').classList.contains('hidden') ? '' : document.getElementById('b3Inicio').value;
+            let b3f = document.getElementById('seccionBloque3').classList.contains('hidden') ? '' : document.getElementById('b3Fin').value;
+            let b3r = document.getElementById('seccionBloque3').classList.contains('hidden') ? '' : document.getElementById('b3Regreso').value;
 
-                let b3i = document.getElementById('b3Inicio').value;
-                let b3f = document.getElementById('b3Fin').value;
-                if(b3i && b3f) fechasAValidar.push({ inicio: b3i, fin: b3f });
+            let nuevosDinero = parseInt(document.getElementById('inputDineroNuevos').value) || 0;
+            let dineroTotalFinal = dineroBaseOriginal + nuevosDinero;
+
+            let d1 = (b1i && b1f) ? contarDiasHabilesEntreFechas(b1i, b1f) : 0;
+            let d2 = (b2i && b2f) ? contarDiasHabilesEntreFechas(b2i, b2f) : 0;
+            let d3 = (b3i && b3f) ? contarDiasHabilesEntreFechas(b3i, b3f) : 0;
+
+            let totalDiasGlobal = d1 + d2 + d3 + dineroTotalFinal;
+
+            if (totalDiasGlobal > 15) {
+                alert(`🚫 ¡BLOQUEO DE SEGURIDAD!\n\nEl total combinado suma ${totalDiasGlobal} días, superando el límite legal anual de 15 días hábiles.`);
+                return;
             }
+
+            let fechasAValidar = [];
+            if (b1i && b1f) fechasAValidar.push({ inicio: b1i, fin: b1f });
+            if (b2i && b2f) fechasAValidar.push({ inicio: b2i, fin: b2f });
+            if (b3i && b3f) fechasAValidar.push({ inicio: b3i, fin: b3f });
 
             if (fechasAValidar.length > 0) {
                 let pasaFiltro = validarCupoPorMesYJefe(fechasAValidar);
@@ -695,20 +692,16 @@
 
             let payload = {
                 documento: empleadoActual['DOCUMENTO'] || empleadoActual['DOC'],
-                modalidad: mod,
-                uniInicio: document.getElementById('uniInicio').value,
-                uniFin: document.getElementById('uniFin').value,
-                uniRegreso: document.getElementById('uniRegreso').value,
-                b1Inicio: document.getElementById('b1Inicio').value,
-                b1Fin: document.getElementById('b1Fin').value,
-                b1Regreso: document.getElementById('b1Regreso').value,
-                b2Inicio: document.getElementById('seccionBloque2').classList.contains('hidden') ? '' : document.getElementById('b2Inicio').value,
-                b2Fin: document.getElementById('seccionBloque2').classList.contains('hidden') ? '' : document.getElementById('b2Fin').value,
-                b2Regreso: document.getElementById('seccionBloque2').classList.contains('hidden') ? '' : document.getElementById('b2Regreso').value,
-                b3Inicio: document.getElementById('seccionBloque3').classList.contains('hidden') ? '' : document.getElementById('b3Inicio').value,
-                b3Fin: document.getElementById('seccionBloque3').classList.contains('hidden') ? '' : document.getElementById('b3Fin').value,
-                b3Regreso: document.getElementById('seccionBloque3').classList.contains('hidden') ? '' : document.getElementById('b3Regreso').value,
-                dinero: document.getElementById('inputDinero').value.trim()
+                b1Inicio: b1i,
+                b1Fin: b1f,
+                b1Regreso: b1r,
+                b2Inicio: b2i,
+                b2Fin: b2f,
+                b2Regreso: b2r,
+                b3Inicio: b3i,
+                b3Fin: b3f,
+                b3Regreso: b3r,
+                dinero: dineroTotalFinal
             };
 
             msgDiv.className = "text-xs font-medium text-center text-blue-700";
