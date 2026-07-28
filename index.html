@@ -34,7 +34,10 @@
         <!-- PANTALLA DE LOGIN / VALIDACIÓN DE CÉDULA -->
         <div id="loginScreen" class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md mx-auto space-y-6 border border-slate-100">
             <div class="flex flex-col items-center text-center">
-                <div class="bg-blue-50 text-blue-700 rounded-2xl p-4 shadow-inner mb-3 text-3xl">🌴</div>
+                <!-- NUEVA IMAGEN INSTITUCIONAL EN LUGAR DE LA PALMERITA -->
+                <div class="bg-blue-50/80 rounded-2xl p-3 shadow-inner mb-3 border border-blue-100 flex items-center justify-center">
+                    <img src="https://lh3.googleusercontent.com/d/1Z8zWfdiK3-gM2HyuCeI-u-vAfxsCgeej" alt="Icono Acceso" class="h-12 w-auto object-contain">
+                </div>
                 <h2 class="text-xl font-bold text-slate-900">Portal de Acceso</h2>
                 <p class="text-xs text-slate-500 mt-1">Ingrese su número de documento para consultar y programar su periodo vacacional.</p>
             </div>
@@ -111,11 +114,11 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Fin</label>
-                            <input type="date" id="b1Fin" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-slate-600 font-medium">
+                            <input type="date" id="b1Fin" readonly class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-100 text-slate-600 font-medium">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Regreso</label>
-                            <input type="date" id="b1Regreso" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-emerald-700 font-bold">
+                            <input type="date" id="b1Regreso" readonly class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-100 text-emerald-700 font-bold">
                         </div>
                     </div>
 
@@ -644,7 +647,7 @@
                 }
 
                 if (contadorMes >= limiteMensualPermitido) {
-                    alert(`⚠️ Límite mensual excedido para el equipo de ${miJefe}:\n\nYa hay ${contadorMes} funcionario(s) programados en el mes de ${anioMes}. El límite proporcional autorizado para este equipo es de ${limiteMensualPermitido} persona(s) por mes.`);
+                    alert(`⚠️ Capacidad de programación alcanzada para el equipo de ${miJefe}:\n\nSe ha superado el número máximo de funcionarios programados para el periodo ${anioMes} (${contadorMes} de ${limiteMensualPermitido} cupos permitidos).\n\nLe recomendamos seleccionar otras fechas para su descanso o comunicarse con la Dirección de Talento Humano para validar una excepción.`);
                     return false;
                 }
             }
@@ -665,6 +668,27 @@
             let b3i = document.getElementById('seccionBloque3').classList.contains('hidden') ? '' : document.getElementById('b3Inicio').value;
             let b3f = document.getElementById('seccionBloque3').classList.contains('hidden') ? '' : document.getElementById('b3Fin').value;
             let b3r = document.getElementById('seccionBloque3').classList.contains('hidden') ? '' : document.getElementById('b3Regreso').value;
+
+            let b1d = parseInt(document.getElementById('b1Dias').value) || 0;
+            if (b1d > 0 && (!b1i || !b1f)) {
+                alert("⚠️ Por favor selecciona la fecha de inicio del Bloque 1 para poder guardar los días de descanso.");
+                document.getElementById('b1Inicio').focus();
+                return;
+            }
+
+            let b2d = parseInt(document.getElementById('b2Dias').value) || 0;
+            if (b2d > 0 && (!b2i || !b2f)) {
+                alert("⚠️ Por favor selecciona la fecha de inicio del Bloque 2.");
+                document.getElementById('b2Inicio').focus();
+                return;
+            }
+
+            let b3d = parseInt(document.getElementById('b3Dias').value) || 0;
+            if (b3d > 0 && (!b3i || !b3f)) {
+                alert("⚠️ Por favor selecciona la fecha de inicio del Bloque 3.");
+                document.getElementById('b3Inicio').focus();
+                return;
+            }
 
             let nuevosDinero = parseInt(document.getElementById('inputDineroNuevos').value) || 0;
             let dineroTotalFinal = dineroBaseOriginal + nuevosDinero;
