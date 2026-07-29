@@ -31,21 +31,25 @@
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-4xl w-full mx-auto p-4 md:p-6 space-y-6 my-auto">
 
-        <!-- PANTALLA DE LOGIN / VALIDACIÓN DE CÉDULA -->
+        <!-- PANTALLA DE LOGIN / VALIDACIÓN DE CÉDULA Y FECHA DE EXPEDICIÓN -->
         <div id="loginScreen" class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md mx-auto space-y-6 border border-slate-100">
             <div class="flex flex-col items-center text-center">
-                <!-- NUEVA IMAGEN INSTITUCIONAL EN LUGAR DE LA PALMERITA -->
                 <div class="bg-blue-50/80 rounded-2xl p-3 shadow-inner mb-3 border border-blue-100 flex items-center justify-center">
                     <img src="https://lh3.googleusercontent.com/d/1Z8zWfdiK3-gM2HyuCeI-u-vAfxsCgeej" alt="Icono Acceso" class="h-12 w-auto object-contain">
                 </div>
                 <h2 class="text-xl font-bold text-slate-900">Portal de Acceso</h2>
-                <p class="text-xs text-slate-500 mt-1">Ingrese su número de documento para consultar y programar su periodo vacacional.</p>
+                <p class="text-xs text-slate-500 mt-1">Ingrese su número de documento y fecha de expedición para consultar y programar su periodo vacacional.</p>
             </div>
 
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">N° de Cédula (Documento)</label>
                     <input type="text" id="loginCedula" placeholder="CEDULA" class="w-full text-sm border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-600 focus:outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Fecha de Expedición</label>
+                    <input type="date" id="loginExpedicion" class="w-full text-sm border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-600 focus:outline-none transition bg-white">
                 </div>
 
                 <div id="loginError" class="text-xs text-rose-600 font-medium text-center hidden"></div>
@@ -61,7 +65,6 @@
             <!-- TARJETA DE BIENVENIDA -->
             <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-4">
                 <div>
-                    <span class="text-xs font-semibold text-blue-600 uppercase tracking-wide">Funcionario Autorizado</span>
                     <h2 id="welcomeTitle" class="text-lg font-bold text-slate-900">Bienvenido</h2>
                     <p id="welcomeSubtitle" class="text-xs text-slate-500">Gestión de periodos de vacaciones y bloques autorizados.</p>
                 </div>
@@ -73,7 +76,7 @@
             <!-- ALERTA SI YA TIENE PERIODO ASIGNADO CON DETALLE -->
             <div id="alertaYaRegistrado" class="bg-amber-50 border border-amber-200 p-5 rounded-2xl text-xs text-amber-900 space-y-3 hidden shadow-sm">
                 <div class="font-bold text-sm flex items-center justify-between">
-                    <span class="flex items-center gap-2">⚠️ Ya tienes registros en tu periodo de vacaciones.</span>
+                    <span id="tituloAlertaEstado" class="flex items-center gap-2">⚠️ Ya tienes registros en tu periodo de vacaciones.</span>
                     <span id="badgePendientes" class="bg-amber-200 text-amber-900 px-3 py-1 rounded-lg text-xs font-bold">Días pendientes: 0 / 15</span>
                 </div>
                 <p id="detalleAsignacion" class="font-medium text-amber-800 pl-6 leading-relaxed"></p>
@@ -95,10 +98,10 @@
             <div id="seccionConfiguracion" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6 hidden">
                 <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wide border-b pb-3 border-slate-100">Configuración Unificada de Programación</h3>
 
-                <!-- BLOQUE 1: FRACCIONAMIENTO INTELIGENTE (B1, B2, B3) -->
+                <!-- BLOQUE 1: FRACCIONAMIENTO INTELIGENTE -->
                 <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
                     <div class="flex justify-between items-center">
-                        <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Fraccionamiento de Descanso</h4>
+                        <h4 id="tituloSeccionBloques" class="text-xs font-bold text-slate-700 uppercase tracking-wider">Fraccionamiento de Descanso</h4>
                         <span id="contadorTotalDias" class="text-xs font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-lg">Total días: 0 / 15</span>
                     </div>
                     
@@ -114,15 +117,15 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Fin</label>
-                            <input type="date" id="b1Fin" readonly class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-100 text-slate-600 font-medium">
+                            <input type="date" id="b1Fin" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-slate-600 font-medium">
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Regreso</label>
-                            <input type="date" id="b1Regreso" readonly class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-slate-100 text-emerald-700 font-bold">
+                            <input type="date" id="b1Regreso" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-emerald-700 font-bold">
                         </div>
                     </div>
 
-                    <!-- Bloque 2 -->
+                    <!-- Bloque 2 (Solo Administrativos) -->
                     <div id="seccionBloque2" class="grid grid-cols-1 md:grid-cols-4 gap-4 border-b pb-3 border-slate-200 items-end hidden">
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 2 - Días</label>
@@ -142,7 +145,7 @@
                         </div>
                     </div>
 
-                    <!-- Bloque 3 -->
+                    <!-- Bloque 3 (Solo Administrativos) -->
                     <div id="seccionBloque3" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end hidden">
                         <div>
                             <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 3 - Días</label>
@@ -163,15 +166,15 @@
                     </div>
                 </div>
 
-                <!-- BLOQUE 2: COMPENSACIÓN EN DINERO -->
-                <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Compensación en Dinero</h4>
+                <!-- BLOQUE 2: COMPENSACIÓN EN DINERO (Oculto inicialmente) -->
+                <div id="seccionCompensacionDinero" class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200 hidden">
+                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Compensación en Dinero (Máximo 7 días)</h4>
                     <div>
                         <label class="block text-xs font-medium text-slate-600 mb-1">Días a Compensar (Nuevos a solicitar)</label>
-                        <input type="number" id="inputDineroNuevos" min="0" value="0" oninput="actualizarAcumuladoDinero()" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white font-bold text-blue-700 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                        <input type="number" id="inputDineroNuevos" min="0" max="7" value="0" oninput="actualizarAcumuladoDinero()" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white font-bold text-blue-700 focus:ring-2 focus:ring-blue-600 focus:outline-none">
                     </div>
                     <div id="alertaExcesoDinero" class="text-xs text-rose-600 font-semibold hidden">
-                        ⚠️ No puedes solicitar más días de los que tienes pendientes (máximo permitido: <span id="spanMaximoPermitido">0</span> días).
+                        ⚠️ La compensación en dinero no puede superar los 7 días permitidos por política institucional.
                     </div>
                     <div class="text-xs text-slate-600 font-medium bg-blue-50 p-3 rounded-lg border border-blue-100 flex justify-between items-center">
                         <span>Total acumulado en dinero que se guardará:</span>
@@ -205,6 +208,41 @@
         let empleadoActual = null;
         let dineroBaseOriginal = 0;
         let todosLosRegistrosGlobal = [];
+        let esAdministrativo = false;
+
+        const mesesNombres = [
+            "enero", "febrero", "marzo", "abril", "mayo", "junio", 
+            "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+        ];
+
+        function obtenerNombreMes(fechaStr) {
+            if (!fechaStr) return "";
+            let d = new Date(fechaStr + 'T00:00:00');
+            return mesesNombres[d.getMonth()];
+        }
+
+        // Conversor robusto para normalizar cualquier formato de fecha de Google Sheets a YYYY-MM-DD
+        function normalizarFechaFormato(fechaVal) {
+            if (!fechaVal) return "";
+            let str = String(fechaVal).trim();
+            
+            // Si viene en formato DD/MM/YYYY (ej: 04/10/1999)
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
+                let partes = str.split('/');
+                return `${partes[2]}-${partes[1]}-${partes[0]}`;
+            }
+
+            // Si Google Sheets lo devuelve como un objeto Date o texto parseable
+            let d = new Date(str);
+            if (!isNaN(d.getTime())) {
+                let yyyy = d.getFullYear();
+                let mm = String(d.getMonth() + 1).padStart(2, '0');
+                let dd = String(d.getDate()).padStart(2, '0');
+                return `${yyyy}-${mm}-${dd}`;
+            }
+
+            return str;
+        }
 
         const festivosColombia = [
             '2026-01-01', '2026-01-12', '2026-03-23', '2026-04-02', '2026-04-03', 
@@ -267,36 +305,95 @@
 
         function actualizarGlobal() {
             let d1 = parseInt(document.getElementById('b1Dias').value) || 0;
+            let i1 = document.getElementById('b1Inicio').value;
             let d2 = parseInt(document.getElementById('b2Dias').value) || 0;
+            let i2 = document.getElementById('b2Inicio').value;
             let d3 = parseInt(document.getElementById('b3Dias').value) || 0;
-            let dinNuevos = parseInt(document.getElementById('inputDineroNuevos').value) || 0;
+            let inputDinero = document.getElementById('inputDineroNuevos');
+            let alertaDinero = document.getElementById('alertaExcesoDinero');
+            let seccionDinero = document.getElementById('seccionCompensacionDinero');
+
+            if (i1 && d1 > 0) {
+                seccionDinero.classList.remove('hidden');
+            } else {
+                seccionDinero.classList.add('hidden');
+                inputDinero.value = 0;
+            }
+
+            if (!esAdministrativo) {
+                if (i1) {
+                    if (d1 < 8 && d1 > 0) {
+                        alert("⚠️ Política Institucional: Para personal no administrativo, el tiempo de descanso debe ser de al menos 8 días.");
+                        document.getElementById('b1Dias').value = 8;
+                        d1 = 8;
+                        let res1 = calcularFechasHabiles(i1, 8);
+                        document.getElementById('b1Fin').value = res1.fin;
+                        document.getElementById('b1Regreso').value = res1.regreso;
+                    }
+                    
+                    if (d1 >= 8) {
+                        let diasRestantesDinero = 15 - d1;
+                        if (diasRestantesDinero > 7) diasRestantesDinero = 7;
+                        inputDinero.value = diasRestantesDinero;
+                    }
+                } else {
+                    inputDinero.value = 0;
+                }
+            }
+
+            let dinNuevos = parseInt(inputDinero.value) || 0;
+
+            if (dinNuevos > 7) {
+                alert("⚠️ Política Institucional: El máximo permitido para compensación en dinero es de 7 días.");
+                inputDinero.value = 7;
+                dinNuevos = 7;
+                alertaDinero.classList.remove('hidden');
+            } else if (dinNuevos < 0) {
+                inputDinero.value = 0;
+                dinNuevos = 0;
+                alertaDinero.classList.add('hidden');
+            } else {
+                alertaDinero.classList.add('hidden');
+            }
 
             let sec2 = document.getElementById('seccionBloque2');
             let sec3 = document.getElementById('seccionBloque3');
 
             let totalBloques = d1;
-            if (d1 > 0 && d1 < 15) {
-                sec2.classList.remove('hidden');
-                totalBloques += d2;
+
+            if (esAdministrativo) {
+                if (d1 > 0 && i1 && document.getElementById('b1Fin').value && totalBloques < 15) {
+                    sec2.classList.remove('hidden');
+                    totalBloques += d2;
+                } else {
+                    sec2.classList.add('hidden');
+                    document.getElementById('b2Dias').value = '';
+                    document.getElementById('b2Inicio').value = '';
+                    document.getElementById('b2Fin').value = '';
+                    document.getElementById('b2Regreso').value = '';
+                    d2 = 0;
+                    sec3.classList.add('hidden');
+                    document.getElementById('b3Dias').value = '';
+                    document.getElementById('b3Inicio').value = '';
+                    document.getElementById('b3Fin').value = '';
+                    document.getElementById('b3Regreso').value = '';
+                    d3 = 0;
+                }
+
+                if (!sec2.classList.contains('hidden') && d2 > 0 && i2 && document.getElementById('b2Fin').value && totalBloques < 15) {
+                    sec3.classList.remove('hidden');
+                    totalBloques = d1 + d2 + d3;
+                } else {
+                    sec3.classList.add('hidden');
+                    document.getElementById('b3Dias').value = '';
+                    document.getElementById('b3Inicio').value = '';
+                    document.getElementById('b3Fin').value = '';
+                    document.getElementById('b3Regreso').value = '';
+                    d3 = 0;
+                }
             } else {
                 sec2.classList.add('hidden');
-                document.getElementById('b2Dias').value = '';
-                document.getElementById('b2Inicio').value = '';
-                document.getElementById('b2Fin').value = '';
-                document.getElementById('b2Regreso').value = '';
-                d2 = 0;
-            }
-
-            if (totalBloques > 0 && totalBloques < 15 && d1 > 0 && d2 > 0) {
-                sec3.classList.remove('hidden');
-                totalBloques = d1 + d2 + d3;
-            } else {
                 sec3.classList.add('hidden');
-                document.getElementById('b3Dias').value = '';
-                document.getElementById('b3Inicio').value = '';
-                document.getElementById('b3Fin').value = '';
-                document.getElementById('b3Regreso').value = '';
-                d3 = 0;
             }
 
             let maxPermitidoTotal = 15;
@@ -306,18 +403,23 @@
                 let exceso = granTotal - maxPermitidoTotal;
                 if (dinNuevos >= exceso) {
                     dinNuevos -= exceso;
-                    document.getElementById('inputDineroNuevos').value = dinNuevos;
-                    document.getElementById('alertaExcesoDinero').classList.remove('hidden');
+                    inputDinero.value = dinNuevos;
                 } else {
                     alert(`⚠️ La suma total de días entre bloques y dinero no puede superar los 15 días hábiles.`);
-                    document.getElementById('b3Dias').value = '';
-                    document.getElementById('b3Inicio').value = '';
-                    document.getElementById('b3Fin').value = '';
-                    document.getElementById('b3Regreso').value = '';
+                    if (esAdministrativo) {
+                        document.getElementById('b3Dias').value = '';
+                        document.getElementById('b3Inicio').value = '';
+                        document.getElementById('b3Fin').value = '';
+                        document.getElementById('b3Regreso').value = '';
+                    } else {
+                        document.getElementById('b1Dias').value = 8;
+                        document.getElementById('b1Inicio').value = '';
+                        document.getElementById('b1Fin').value = '';
+                        document.getElementById('b1Regreso').value = '';
+                        inputDinero.value = 0;
+                    }
                 }
                 granTotal = 15;
-            } else {
-                document.getElementById('alertaExcesoDinero').classList.add('hidden');
             }
 
             document.getElementById('contadorTotalDias').textContent = `Total días bloques: ${totalBloques} / 15`;
@@ -397,10 +499,11 @@
 
         function validarCedulaSistema() {
             const cedulaInput = document.getElementById('loginCedula').value.trim();
+            const expedicionInput = document.getElementById('loginExpedicion').value.trim();
             const errDiv = document.getElementById('loginError');
 
-            if (!cedulaInput) {
-                errDiv.textContent = "Por favor ingresa un número de documento.";
+            if (!cedulaInput || !expedicionInput) {
+                errDiv.textContent = "Por favor ingrese su número de cédula y la fecha de expedición.";
                 errDiv.classList.remove('hidden');
                 return;
             }
@@ -443,18 +546,41 @@
 
                     todosLosRegistrosGlobal = registros;
 
+                    // VALIDACIÓN CONJUNTA: DOCUMENTO Y FECHA DE EXPEDICIÓN CON TOLERANCIA DE FORMATO
                     let encontrado = registros.find(item => {
                         let doc = String(item['DOCUMENTO'] || item['DOC'] || '').trim();
-                        return doc === cedulaInput;
+                        let fExpRaw = item['F_EXPEDICION'] || item['F_EXPEDICIÓN'] || item['FECHA EXPEDICION'] || '';
+                        let fExpNormalizada = normalizarFechaFormato(fExpRaw);
+
+                        return doc === cedulaInput && fExpNormalizada === expedicionInput;
                     });
 
                     if (!encontrado) {
-                        errDiv.textContent = "El número de documento no existe en la base de datos de Vacaciones.";
+                        errDiv.textContent = "El número de documento o la fecha de expedición no coinciden en la base de datos.";
                         errDiv.classList.remove('hidden');
                         return;
                     }
 
                     empleadoActual = encontrado;
+
+                    let areaEmpleado = "";
+                    for (let key in encontrado) {
+                        if (key.includes('AREA') || key === 'E' || key === 'F') {
+                            let valArea = String(encontrado[key]).trim().toUpperCase();
+                            if(valArea === 'ADMINISTRATIVA' || valArea === 'OPERATIVA' || valArea === 'DOMICILIARIA') {
+                                areaEmpleado = valArea;
+                                break;
+                            }
+                        }
+                    }
+                    esAdministrativo = (areaEmpleado === 'ADMINISTRATIVA');
+
+                    if (esAdministrativo) {
+                        document.getElementById('tituloSeccionBloques').textContent = "Fraccionamiento de Descanso (Hasta 3 Bloques - Área Administrativa)";
+                        document.getElementById('inputDineroNuevos').removeAttribute('readonly');
+                    } else {
+                        document.getElementById('tituloSeccionBloques').textContent = "Fraccionamiento de Descanso (1 Bloque Autorizado - Asignación Automática de Dinero)";
+                    }
 
                     let fInicio = encontrado['INICIO VACACIONES'] || '';
                     let fFin = encontrado['FIN VACACIONES'] || '';
@@ -470,9 +596,9 @@
                     
                     dineroBaseOriginal = 0;
                     for (let key in encontrado) {
-                        if (key.includes('DINERO') || key === 'Q') {
+                        if (key.includes('DINERO') || key === 'Q' || key === 'R') {
                             let valStr = String(encontrado[key]).trim();
-                            if (valStr !== "") {
+                            if (valStr !== "" && !isNaN(valStr)) {
                                 let valNum = parseInt(valStr.replace(/\D/g, '')) || 0;
                                 dineroBaseOriginal = valNum;
                                 break;
@@ -480,9 +606,17 @@
                         }
                     }
 
+                    let estadoAutorizadoColQ = "";
+                    for (let key in encontrado) {
+                        if (key === 'AUTORIZADO' || key.includes('AUTORIZADO')) {
+                            estadoAutorizadoColQ = String(encontrado[key]).trim().toUpperCase();
+                            break;
+                        }
+                    }
+
                     let valorModificar = "";
                     for (let key in encontrado) {
-                        if (key.includes('MODIFICAR')) {
+                        if (key.includes('MODIFICAR') || key === 'T') {
                             valorModificar = encontrado[key];
                             break;
                         }
@@ -500,23 +634,28 @@
                         let dBlock1 = contarDiasHabilesEntreFechas(fInicio, fFin);
                         diasProgramadosBase += dBlock1;
                         tieneBloque1 = true;
-                        detalleTexto += `• Bloque 1: Del ${fInicio} al ${fFin} (${dBlock1} días hábiles - Regresa: ${fRegreso})<br>`;
+                        let mesInicioB1 = obtenerNombreMes(fInicio);
+                        let mesFinB1 = obtenerNombreMes(fFin);
+                        detalleTexto += `• Bloque 1: Del ${fInicio} al ${fFin} (${dBlock1} días hábiles - Regresa: ${fRegreso}) [Impacta nómina de: ${mesFinB1 || mesInicioB1}]<br>`;
                     }
                     if (b2Inicio && b2Fin) {
                         let dBlock2 = contarDiasHabilesEntreFechas(b2Inicio, b2Fin);
                         diasProgramadosBase += dBlock2;
                         tieneBloque2 = true;
-                        detalleTexto += `• Bloque 2: Del ${b2Inicio} al ${b2Fin} (${dBlock2} días hábiles - Regresa: ${b2Regreso})<br>`;
+                        let mesFinB2 = obtenerNombreMes(b2Fin);
+                        detalleTexto += `• Bloque 2: Del ${b2Inicio} al ${b2Fin} (${dBlock2} días hábiles - Regresa: ${b2Regreso}) [Impacta nómina de: ${mesFinB2}]<br>`;
                     }
                     if (b3Inicio && b3Fin) {
                         let dBlock3 = contarDiasHabilesEntreFechas(b3Inicio, b3Fin);
                         diasProgramadosBase += dBlock3;
                         tieneBloque3 = true;
-                        detalleTexto += `• Bloque 3: Del ${b3Inicio} al ${b3Fin} (${dBlock3} días hábiles - Regresa: ${b3Regreso})<br>`;
+                        let mesFinB3 = obtenerNombreMes(b3Fin);
+                        detalleTexto += `• Bloque 3: Del ${b3Inicio} al ${b3Fin} (${dBlock3} días hábiles - Regresa: ${b3Regreso}) [Impacta nómina de: ${mesFinB3}]<br>`;
                     }
                     if (dineroBaseOriginal > 0) {
                         diasProgramadosBase += dineroBaseOriginal;
-                        detalleTexto += `• Compensación en Dinero: ${dineroBaseOriginal} días liquidados<br>`;
+                        let mesDinero = fInicio ? obtenerNombreMes(fInicio) : "del mes correspondiente";
+                        detalleTexto += `• Compensación en Dinero: ${dineroBaseOriginal} días liquidados (Se reflejarán en la nómina del mes de ${mesDinero})<br>`;
                     }
 
                     if (diasProgramadosBase > 15) diasProgramadosBase = 15;
@@ -525,11 +664,27 @@
 
                     const seccionConfig = document.getElementById('seccionConfiguracion');
                     const seccionModBtn = document.getElementById('seccionModificarBoton');
+                    const contenedorAlerta = document.getElementById('alertaYaRegistrado');
+                    const tituloAlerta = document.getElementById('tituloAlertaEstado');
+                    const detalleAsignacionEl = document.getElementById('detalleAsignacion');
+                    const badgePendientesEl = document.getElementById('badgePendientes');
+
+                    if (estadoAutorizadoColQ === 'SI') {
+                        contenedorAlerta.className = "bg-emerald-50 border border-emerald-300 p-5 rounded-2xl text-xs text-emerald-950 space-y-3 shadow-md";
+                        badgePendientesEl.className = "bg-emerald-200 text-emerald-950 px-3 py-1 rounded-lg text-xs font-bold";
+                        detalleAsignacionEl.className = "font-medium text-emerald-900 pl-6 leading-relaxed";
+                        tituloAlerta.innerHTML = `✅ Autorizado: puede tomar las fechas autorizadas.`;
+                    } else {
+                        contenedorAlerta.className = "bg-amber-50 border border-amber-200 p-5 rounded-2xl text-xs text-amber-900 space-y-3 shadow-sm";
+                        badgePendientesEl.className = "bg-amber-200 text-amber-900 px-3 py-1 rounded-lg text-xs font-bold";
+                        detalleAsignacionEl.className = "font-medium text-amber-800 pl-6 leading-relaxed";
+                        tituloAlerta.innerHTML = `⚠️ Pendiente de autorización por parte del área.`;
+                    }
 
                     if (detalleTexto !== "") {
                         document.getElementById('detalleAsignacion').innerHTML = detalleTexto;
                         document.getElementById('badgePendientes').textContent = `Días pendientes: ${diasPendientesIniciales} / 15`;
-                        document.getElementById('alertaYaRegistrado').classList.remove('hidden');
+                        contenedorAlerta.classList.remove('hidden');
                         document.getElementById('panelPendientesGeneral').classList.add('hidden');
 
                         if (tieneBloque1) {
@@ -538,13 +693,13 @@
                             document.getElementById('b1Fin').value = fFin;
                             document.getElementById('b1Regreso').value = fRegreso;
                         }
-                        if (tieneBloque2) {
+                        if (tieneBloque2 && esAdministrativo) {
                             document.getElementById('b2Dias').value = contarDiasHabilesEntreFechas(b2Inicio, b2Fin);
                             document.getElementById('b2Inicio').value = b2Inicio;
                             document.getElementById('b2Fin').value = b2Fin;
                             document.getElementById('b2Regreso').value = b2Regreso;
                         }
-                        if (tieneBloque3) {
+                        if (tieneBloque3 && esAdministrativo) {
                             document.getElementById('b3Dias').value = contarDiasHabilesEntreFechas(b3Inicio, b3Fin);
                             document.getElementById('b3Inicio').value = b3Inicio;
                             document.getElementById('b3Fin').value = b3Fin;
@@ -567,11 +722,11 @@
                         }
                     } else {
                         seccionConfig.classList.remove('hidden');
-                        document.getElementById('alertaYaRegistrado').classList.add('hidden');
+                        contenedorAlerta.classList.add('hidden');
                         document.getElementById('panelPendientesGeneral').classList.remove('hidden');
                         document.getElementById('textoDiasPendientesGeneral').textContent = `Tienes ${diasPendientesIniciales} días hábiles disponibles para programar.`;
                         
-                        document.getElementById('b1Dias').value = '';
+                        document.getElementById('b1Dias').value = esAdministrativo ? '' : 8;
                         document.getElementById('b1Inicio').value = '';
                         document.getElementById('b1Fin').value = '';
                         document.getElementById('b1Regreso').value = '';
@@ -582,7 +737,7 @@
                     document.getElementById('loginScreen').classList.add('hidden');
                     document.getElementById('mainAppContainer').classList.remove('hidden');
                     document.getElementById('welcomeTitle').textContent = `Bienvenido, ${empleadoActual['NOMBRE'] || 'Funcionario'}`;
-                    document.getElementById('welcomeSubtitle').textContent = `Documento: ${cedulaInput} | Gestión de Vacaciones Autorizadas`;
+                    document.getElementById('welcomeSubtitle').textContent = `Documento: ${cedulaInput} | Área: ${areaEmpleado || 'General'}`;
 
                 } catch (e) {
                     console.error(e);
@@ -671,7 +826,7 @@
 
             let b1d = parseInt(document.getElementById('b1Dias').value) || 0;
             if (b1d > 0 && (!b1i || !b1f)) {
-                alert("⚠️ Por favor selecciona la fecha de inicio del Bloque 1 para poder guardar los días de descanso.");
+                alert("⚠️ Por favor selecciona la fecha de inicio del Bloque 1.");
                 document.getElementById('b1Inicio').focus();
                 return;
             }
@@ -691,6 +846,12 @@
             }
 
             let nuevosDinero = parseInt(document.getElementById('inputDineroNuevos').value) || 0;
+            if (nuevosDinero > 7) {
+                alert("⚠️ Política Institucional: El máximo permitido para compensación en dinero es de 7 días.");
+                document.getElementById('inputDineroNuevos').value = 7;
+                return;
+            }
+
             let dineroTotalFinal = dineroBaseOriginal + nuevosDinero;
 
             let d1 = (b1i && b1f) ? contarDiasHabilesEntreFechas(b1i, b1f) : 0;
@@ -712,6 +873,20 @@
             if (fechasAValidar.length > 0) {
                 let pasaFiltro = validarCupoPorMesYJefe(fechasAValidar);
                 if (!pasaFiltro) return;
+            }
+
+            let mesInicioStr = obtenerNombreMes(b1i);
+            let ultimoMesFinal = "";
+            if (b3f) ultimoMesFinal = obtenerNombreMes(b3f);
+            else if (b2f) ultimoMesFinal = obtenerNombreMes(b2f);
+            else if (b1f) ultimoMesFinal = obtenerNombreMes(b1f);
+
+            let mensajeExitoDetallado = `¡Vacaciones enviadas con éxito!\n\n`;
+            if (nuevosDinero > 0 && mesInicioStr) {
+                mensajeExitoDetallado += `• Los ${nuevosDinero} días liquidados en dinero se verán reflejados en la nómina del mes de ${mesInicioStr}.\n`;
+            }
+            if (ultimoMesFinal) {
+                mensajeExitoDetallado += `• El cierre del periodo vacacional y último bloque programado corresponde a la nómina de ${ultimoMesFinal}.`;
             }
 
             let payload = {
@@ -749,6 +924,7 @@
             setTimeout(() => {
                 msgDiv.className = "text-xs font-medium text-center text-emerald-600";
                 msgDiv.textContent = "¡Vacaciones enviadas y registradas con éxito en la base de datos!";
+                alert(mensajeExitoDetallado);
                 
                 setTimeout(() => {
                     document.getElementById('loginCedula').value = empleadoActual['DOCUMENTO'] || empleadoActual['DOC'];
@@ -761,6 +937,7 @@
 
         function cerrarSesion() {
             document.getElementById('loginCedula').value = '';
+            document.getElementById('loginExpedicion').value = '';
             document.getElementById('mainAppContainer').classList.add('hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
         }
