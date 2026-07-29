@@ -22,8 +22,9 @@
                 <img src="https://lh3.googleusercontent.com/d/1MjgNe-zgyiBPShxkwT5053JND1hc4jY8" alt="Logo Institucional" class="h-10 w-auto object-contain">
             </div>
             <div>
-                <span class="text-xs uppercase tracking-widest text-blue-300 font-semibold block text-right">Talento Humano</span>
-                <h1 class="text-sm font-bold text-slate-100">Sistema de Gestión de Vacaciones</h1>
+                <span class="text-xs uppercase tracking-widest text-blue-300 font-semibold block text-left" style="font-family: 'Andale Mono', monospace, sans-serif;">GLOBAL LIFE AMBULANCIAS SAS</span>
+                <span class="text-xs font-semibold block text-left text-slate-300" style="font-family: 'Galeano Grotesque', 'Plus Jakarta Sans', sans-serif;">Talento Humano</span>
+                <h1 class="text-sm font-bold text-slate-100 text-left" style="font-family: 'Bariol Regular', 'Plus Jakarta Sans', sans-serif;">Sistema de Gestión de Vacaciones</h1>
             </div>
         </div>
     </header>
@@ -37,7 +38,7 @@
                 <div class="bg-blue-50/80 rounded-2xl p-3 shadow-inner mb-3 border border-blue-100 flex items-center justify-center">
                     <img src="https://lh3.googleusercontent.com/d/1Z8zWfdiK3-gM2HyuCeI-u-vAfxsCgeej" alt="Icono Acceso" class="h-12 w-auto object-contain">
                 </div>
-                <h2 class="text-xl font-bold text-slate-900">Portal de Acceso</h2>
+                <h2 class="text-xl font-bold text-slate-900">SOLICITUD DE VACACIONES</h2>
                 <p class="text-xs text-slate-500 mt-1">Ingrese su número de documento y fecha de expedición para consultar y programar su periodo vacacional.</p>
             </div>
 
@@ -48,7 +49,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Fecha de Expedición</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Fecha de Expedición de Cédula (Documento)</label>
                     <input type="date" id="loginExpedicion" class="w-full text-sm border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-600 focus:outline-none transition bg-white">
                 </div>
 
@@ -221,18 +222,15 @@
             return mesesNombres[d.getMonth()];
         }
 
-        // Conversor robusto para normalizar cualquier formato de fecha de Google Sheets a YYYY-MM-DD
         function normalizarFechaFormato(fechaVal) {
             if (!fechaVal) return "";
             let str = String(fechaVal).trim();
             
-            // Si viene en formato DD/MM/YYYY (ej: 04/10/1999)
             if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
                 let partes = str.split('/');
                 return `${partes[2]}-${partes[1]}-${partes[0]}`;
             }
 
-            // Si Google Sheets lo devuelve como un objeto Date o texto parseable
             let d = new Date(str);
             if (!isNaN(d.getTime())) {
                 let yyyy = d.getFullYear();
@@ -546,7 +544,6 @@
 
                     todosLosRegistrosGlobal = registros;
 
-                    // VALIDACIÓN CONJUNTA: DOCUMENTO Y FECHA DE EXPEDICIÓN CON TOLERANCIA DE FORMATO
                     let encontrado = registros.find(item => {
                         let doc = String(item['DOCUMENTO'] || item['DOC'] || '').trim();
                         let fExpRaw = item['F_EXPEDICION'] || item['F_EXPEDICIÓN'] || item['FECHA EXPEDICION'] || '';
