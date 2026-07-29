@@ -13,30 +13,29 @@
         .institutional-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white">
 
     <!-- ENCABEZADO INSTITUCIONAL SUPERIOR -->
-    <header class="institutional-gradient text-white shadow-lg border-b border-blue-900">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center space-x-3 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/10 shadow-inner">
-                <img src="https://lh3.googleusercontent.com/d/1MjgNe-zgyiBPShxkwT5053JND1hc4jY8" alt="Logo Institucional" class="h-10 w-auto object-contain">
+    <header class="institutional-gradient text-white shadow-md border-b border-blue-900 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3 bg-white/10 px-3.5 py-2 rounded-xl backdrop-blur-sm border border-white/10 shadow-inner">
+                <img src="https://lh3.googleusercontent.com/d/1MjgNe-zgyiBPShxkwT5053JND1hc4jY8" alt="Logo Institucional" class="h-8 sm:h-9 w-auto object-contain">
             </div>
-            <div>
-                <span class="text-xs uppercase tracking-widest text-blue-300 font-semibold block text-left" style="font-family: 'Andale Mono', monospace, sans-serif;">GLOBAL LIFE AMBULANCIAS SAS</span>
-                <span class="text-xs font-semibold block text-left text-slate-300" style="font-family: 'Galeano Grotesque', 'Plus Jakarta Sans', sans-serif;">Talento Humano</span>
-                <h1 class="text-sm font-bold text-slate-100 text-left" style="font-family: 'Bariol Regular', 'Plus Jakarta Sans', sans-serif;">Sistema de Gestión de Vacaciones</h1>
+            <div class="text-right sm:text-left flex-1 sm:flex-none">
+                <span class="text-[10px] uppercase tracking-widest text-blue-300 font-semibold block" style="font-family: 'Andale Mono', monospace, sans-serif;">GLOBAL LIFE AMBULANCIAS SAS</span>
+                <span class="text-[11px] font-medium block text-slate-300" style="font-family: 'Galeano Grotesque', 'Plus Jakarta Sans', sans-serif;">Talento Humano • Sistema de Gestión de Vacaciones</span>
             </div>
         </div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL -->
-    <main class="max-w-4xl w-full mx-auto p-4 md:p-6 space-y-6 my-auto">
+    <!-- CONTENEDOR PRINCIPAL ADAPTABLE A PANTALLA -->
+    <main class="max-w-6xl w-full mx-auto p-3 sm:p-6 space-y-5 my-auto flex-grow">
 
         <!-- PANTALLA DE LOGIN / VALIDACIÓN DE CÉDULA Y FECHA DE EXPEDICIÓN -->
-        <div id="loginScreen" class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md mx-auto space-y-6 border border-slate-100">
+        <div id="loginScreen" class="bg-white p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-md mx-auto space-y-6 border border-slate-100 my-8">
             <div class="flex flex-col items-center text-center">
                 <div class="bg-blue-50/80 rounded-2xl p-3 shadow-inner mb-3 border border-blue-100 flex items-center justify-center">
-                    <img src="https://lh3.googleusercontent.com/d/1Z8zWfdiK3-gM2HyuCeI-u-vAfxsCgeej" alt="Icono Acceso" class="h-12 w-auto object-contain">
+                    <img src="https://lh3.googleusercontent.com/d/1Z8zWfdiK3-gM2HyuCeI-u-vAfxsCgeej" alt="Icono Acceso" class="h-10 w-auto object-contain">
                 </div>
                 <h2 class="text-xl font-bold text-slate-900">SOLICITUD DE VACACIONES</h2>
                 <p class="text-xs text-slate-500 mt-1">Ingrese su número de documento y fecha de expedición para consultar y programar su periodo vacacional.</p>
@@ -62,131 +61,134 @@
         </div>
 
         <!-- PANTALLA PRINCIPAL DE VACACIONES -->
-        <div id="mainAppContainer" class="space-y-6 hidden">
+        <div id="mainAppContainer" class="space-y-5 hidden">
             <!-- TARJETA DE BIENVENIDA -->
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap justify-between items-center gap-4">
+            <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 id="welcomeTitle" class="text-lg font-bold text-slate-900">Bienvenido</h2>
-                    <p id="welcomeSubtitle" class="text-xs text-slate-500">Gestión de periodos de vacaciones y bloques autorizados.</p>
+                    <h2 id="welcomeTitle" class="text-lg sm:text-xl font-bold text-slate-900">Bienvenido</h2>
+                    <p id="welcomeSubtitle" class="text-xs sm:text-sm text-slate-500 mt-0.5">Gestión de periodos de vacaciones y bloques autorizados.</p>
                 </div>
-                <button onclick="cerrarSesion()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition">
+                <button onclick="cerrarSesion()" class="w-full md:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center justify-center gap-2">
                     Cerrar Sesión ✕
                 </button>
             </div>
 
             <!-- ALERTA SI YA TIENE PERIODO ASIGNADO CON DETALLE -->
-            <div id="alertaYaRegistrado" class="bg-amber-50 border border-amber-200 p-5 rounded-2xl text-xs text-amber-900 space-y-3 hidden shadow-sm">
-                <div class="font-bold text-sm flex items-center justify-between">
-                    <span id="tituloAlertaEstado" class="flex items-center gap-2">⚠️ Ya tienes registros en tu periodo de vacaciones.</span>
+            <div id="alertaYaRegistrado" class="bg-amber-50 border border-amber-200 p-5 rounded-2xl text-xs sm:text-sm text-amber-900 space-y-3 hidden shadow-sm">
+                <div class="font-bold flex flex-wrap items-center justify-between gap-2">
+                    <span id="tituloAlertaEstado" class="flex items-center gap-2 text-amber-950 font-bold">⚠️ Ya tienes registros en tu periodo de vacaciones.</span>
                     <span id="badgePendientes" class="bg-amber-200 text-amber-900 px-3 py-1 rounded-lg text-xs font-bold">Días pendientes: 0 / 15</span>
                 </div>
-                <p id="detalleAsignacion" class="font-medium text-amber-800 pl-6 leading-relaxed"></p>
+                <p id="detalleAsignacion" class="font-medium text-amber-900 pl-4 border-l-2 border-amber-400 leading-relaxed"></p>
                 
                 <div id="seccionModificarBoton" class="pt-3 border-t border-amber-200 flex flex-wrap items-center justify-between gap-3 hidden">
                     <span id="textoModificarAviso" class="text-amber-800 font-medium">⚠️ Has completado tus días disponibles.</span>
-                    <button id="btnModificarAccion" onclick="habilitarModificacion()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-4 py-2 rounded-xl transition shadow-sm">
+                    <button id="btnModificarAccion" onclick="habilitarModificacion()" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-4 py-2 rounded-xl transition shadow-sm text-xs">
                         Modificar Fechas 🔓
                     </button>
                 </div>
             </div>
 
-            <div id="panelPendientesGeneral" class="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex justify-between items-center hidden shadow-sm">
-                <span class="text-xs font-semibold text-blue-900">Estado de tu periodo anual:</span>
-                <span id="textoDiasPendientesGeneral" class="text-xs font-bold text-blue-700 bg-white px-3 py-1.5 rounded-xl shadow-sm">Tienes 15 días hábiles disponibles para programar.</span>
+            <div id="panelPendientesGeneral" class="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex flex-wrap justify-between items-center gap-3 hidden shadow-sm">
+                <span class="text-xs sm:text-sm font-semibold text-blue-900">Estado de tu periodo anual:</span>
+                <span id="textoDiasPendientesGeneral" class="text-xs sm:text-sm font-bold text-blue-800 bg-white px-3.5 py-1.5 rounded-xl shadow-sm border border-blue-100">Tienes 15 días hábiles disponibles para programar.</span>
             </div>
 
             <!-- CONTENEDOR UNIFICADO DE CONFIGURACIÓN -->
-            <div id="seccionConfiguracion" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6 hidden">
-                <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wide border-b pb-3 border-slate-100">Configuración Unificada de Programación</h3>
+            <div id="seccionConfiguracion" class="bg-white p-5 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6 hidden">
+                <div class="border-b pb-3 border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="font-bold text-slate-900 text-sm sm:text-base uppercase tracking-wide">Configuración Unificada de Programación</h3>
+                    <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-lg font-medium">Año Vigente 2026</span>
+                </div>
 
                 <!-- BLOQUE 1: FRACCIONAMIENTO INTELIGENTE -->
-                <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <div class="flex justify-between items-center">
-                        <h4 id="tituloSeccionBloques" class="text-xs font-bold text-slate-700 uppercase tracking-wider">Fraccionamiento de Descanso</h4>
+                <div class="space-y-4 p-4 sm:p-5 bg-slate-50/70 rounded-xl border border-slate-200">
+                    <div class="flex flex-wrap justify-between items-center gap-2">
+                        <h4 id="tituloSeccionBloques" class="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider">Fraccionamiento de Descanso</h4>
                         <span id="contadorTotalDias" class="text-xs font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-lg">Total días: 0 / 15</span>
                     </div>
                     
                     <!-- Bloque 1 -->
-                    <div id="seccionBloque1" class="grid grid-cols-1 md:grid-cols-4 gap-4 border-b pb-3 border-slate-200 items-end">
+                    <div id="seccionBloque1" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 border-b pb-4 border-slate-200 items-end">
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Días</label>
-                            <input type="number" id="b1Dias" min="1" max="15" oninput="actualizarBloquePorDias(1)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 1 - Días Hábiles</label>
+                            <input type="number" id="b1Dias" min="1" max="15" placeholder="Ej. 10" oninput="actualizarBloquePorDias(1)" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Inicio</label>
-                            <input type="date" id="b1Inicio" onchange="calcularBloquePorFechas(1)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 1 - Fecha Inicio</label>
+                            <input type="date" id="b1Inicio" onchange="calcularBloquePorFechas(1)" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Fin</label>
-                            <input type="date" id="b1Fin" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-slate-600 font-medium">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 1 - Fecha Fin</label>
+                            <input type="date" id="b1Fin" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 bg-slate-100 text-slate-700 font-medium cursor-not-allowed">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 1 - Regreso</label>
-                            <input type="date" id="b1Regreso" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-emerald-700 font-bold">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 1 - Regresa a Laborar</label>
+                            <input type="date" id="b1Regreso" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 bg-slate-100 text-emerald-700 font-bold cursor-not-allowed">
                         </div>
                     </div>
 
                     <!-- Bloque 2 (Solo Administrativos) -->
-                    <div id="seccionBloque2" class="grid grid-cols-1 md:grid-cols-4 gap-4 border-b pb-3 border-slate-200 items-end hidden">
+                    <div id="seccionBloque2" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 border-b pb-4 border-slate-200 items-end hidden">
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 2 - Días</label>
-                            <input type="number" id="b2Dias" min="1" max="15" oninput="actualizarBloquePorDias(2)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 2 - Días Hábiles</label>
+                            <input type="number" id="b2Dias" min="1" max="15" placeholder="Ej. 3" oninput="actualizarBloquePorDias(2)" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 2 - Inicio</label>
-                            <input type="date" id="b2Inicio" onchange="calcularBloquePorFechas(2)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 2 - Fecha Inicio</label>
+                            <input type="date" id="b2Inicio" onchange="calcularBloquePorFechas(2)" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 2 - Fin</label>
-                            <input type="date" id="b2Fin" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-slate-600 font-medium">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 2 - Fecha Fin</label>
+                            <input type="date" id="b2Fin" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 bg-slate-100 text-slate-700 font-medium cursor-not-allowed">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 2 - Regreso</label>
-                            <input type="date" id="b2Regreso" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-emerald-700 font-bold">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 2 - Regresa a Laborar</label>
+                            <input type="date" id="b2Regreso" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 bg-slate-100 text-emerald-700 font-bold cursor-not-allowed">
                         </div>
                     </div>
 
                     <!-- Bloque 3 (Solo Administrativos) -->
-                    <div id="seccionBloque3" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end hidden">
+                    <div id="seccionBloque3" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 items-end hidden">
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 3 - Días</label>
-                            <input type="number" id="b3Dias" min="1" max="15" oninput="actualizarBloquePorDias(3)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white font-bold text-blue-700">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 3 - Días Hábiles</label>
+                            <input type="number" id="b3Dias" min="1" max="15" placeholder="Ej. 2" oninput="actualizarBloquePorDias(3)" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white font-bold text-blue-700 focus:ring-2 focus:ring-blue-600 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 3 - Inicio</label>
-                            <input type="date" id="b3Inicio" onchange="calcularBloquePorFechas(3)" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 3 - Fecha Inicio</label>
+                            <input type="date" id="b3Inicio" onchange="calcularBloquePorFechas(3)" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 3 - Fin</label>
-                            <input type="date" id="b3Fin" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-slate-600 font-medium">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 3 - Fecha Fin</label>
+                            <input type="date" id="b3Fin" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 bg-slate-100 text-slate-700 font-medium cursor-not-allowed">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-slate-600 mb-1">Bloque 3 - Regreso</label>
-                            <input type="date" id="b3Regreso" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-100 text-emerald-700 font-bold">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 3 - Regresa a Laborar</label>
+                            <input type="date" id="b3Regreso" readonly class="w-full text-sm border border-slate-200 rounded-xl px-3.5 py-2.5 bg-slate-100 text-emerald-700 font-bold cursor-not-allowed">
                         </div>
                     </div>
                 </div>
 
-                <!-- BLOQUE 2: COMPENSACIÓN EN DINERO (Oculto inicialmente) -->
-                <div id="seccionCompensacionDinero" class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200 hidden">
-                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Compensación en Dinero (Máximo 7 días)</h4>
+                <!-- BLOQUE: COMPENSACIÓN EN DINERO (Oculto hasta tener días e inicio en Bloque 1) -->
+                <div id="seccionCompensacionDinero" class="space-y-3 p-4 sm:p-5 bg-slate-50/70 rounded-xl border border-slate-200 hidden">
+                    <h4 class="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider">Compensación en Dinero (Máximo 7 días)</h4>
                     <div>
-                        <label class="block text-xs font-medium text-slate-600 mb-1">Días a Compensar (Nuevos a solicitar)</label>
-                        <input type="number" id="inputDineroNuevos" min="0" max="7" value="0" oninput="actualizarAcumuladoDinero()" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white font-bold text-blue-700 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Días a Compensar (Nuevos a solicitar)</label>
+                        <input type="number" id="inputDineroNuevos" min="0" max="7" value="0" oninput="actualizarAcumuladoDinero()" class="w-full sm:w-1/2 text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white font-bold text-blue-700 focus:ring-2 focus:ring-blue-600 focus:outline-none">
                     </div>
                     <div id="alertaExcesoDinero" class="text-xs text-rose-600 font-semibold hidden">
                         ⚠️ La compensación en dinero no puede superar los 7 días permitidos por política institucional.
                     </div>
-                    <div class="text-xs text-slate-600 font-medium bg-blue-50 p-3 rounded-lg border border-blue-100 flex justify-between items-center">
+                    <div class="text-xs sm:text-sm text-slate-700 font-medium bg-blue-50/80 p-3.5 rounded-xl border border-blue-100 flex flex-wrap justify-between items-center gap-2">
                         <span>Total acumulado en dinero que se guardará:</span>
                         <span id="labelTotalDineroAcumulado" class="font-bold text-blue-900 text-sm">0 días (0 previos + 0 nuevos)</span>
                     </div>
                 </div>
 
-                <div id="formMsg" class="text-xs font-medium text-center hidden"></div>
+                <div id="formMsg" class="text-xs font-medium text-center hidden p-3 rounded-xl bg-slate-100"></div>
 
                 <div class="pt-2">
-                    <button id="btnGuardar" onclick="guardarVacaciones()" class="w-full md:w-auto bg-blue-900 hover:bg-blue-800 text-white font-semibold text-xs py-3.5 px-8 rounded-xl transition shadow-md shadow-blue-100">
+                    <button id="btnGuardar" onclick="guardarVacaciones()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-semibold text-sm py-4 px-8 rounded-xl transition shadow-md shadow-blue-100 flex items-center justify-center gap-2">
                         Guardar Selección en la Base de Datos 💾
                     </button>
                 </div>
@@ -196,7 +198,9 @@
 
     <!-- PIE DE PÁGINA INSTITUCIONAL -->
     <footer class="bg-white border-t border-slate-200 mt-12 py-4 text-center text-xs text-slate-500">
-        <p>Dirección de Talento Humano • Sistema Automatizado de Gestión de Vacaciones Institucionales</p>
+        <div class="max-w-7xl mx-auto px-4">
+            <p>Dirección de Talento Humano • Sistema Automatizado de Gestión de Vacaciones Institucionales</p>
+        </div>
     </footer>
 
     <!-- FORMULARIO OCULTO PARA ENVÍO LIMPIO SIN RESTRICCIONES CORS -->
@@ -311,6 +315,7 @@
             let alertaDinero = document.getElementById('alertaExcesoDinero');
             let seccionDinero = document.getElementById('seccionCompensacionDinero');
 
+            // REGLA ESTRICTA: La sección de dinero solo aparece si hay días e inicio en el Bloque 1
             if (i1 && d1 > 0) {
                 seccionDinero.classList.remove('hidden');
             } else {
@@ -667,14 +672,14 @@
                     const badgePendientesEl = document.getElementById('badgePendientes');
 
                     if (estadoAutorizadoColQ === 'SI') {
-                        contenedorAlerta.className = "bg-emerald-50 border border-emerald-300 p-5 rounded-2xl text-xs text-emerald-950 space-y-3 shadow-md";
+                        contenedorAlerta.className = "bg-emerald-50 border border-emerald-300 p-5 rounded-2xl text-xs sm:text-sm text-emerald-950 space-y-3 shadow-md";
                         badgePendientesEl.className = "bg-emerald-200 text-emerald-950 px-3 py-1 rounded-lg text-xs font-bold";
-                        detalleAsignacionEl.className = "font-medium text-emerald-900 pl-6 leading-relaxed";
+                        detalleAsignacionEl.className = "font-medium text-emerald-900 pl-4 border-l-2 border-emerald-500 leading-relaxed";
                         tituloAlerta.innerHTML = `✅ Autorizado: puede tomar las fechas autorizadas.`;
                     } else {
-                        contenedorAlerta.className = "bg-amber-50 border border-amber-200 p-5 rounded-2xl text-xs text-amber-900 space-y-3 shadow-sm";
+                        contenedorAlerta.className = "bg-amber-50 border border-amber-200 p-5 rounded-2xl text-xs sm:text-sm text-amber-900 space-y-3 shadow-sm";
                         badgePendientesEl.className = "bg-amber-200 text-amber-900 px-3 py-1 rounded-lg text-xs font-bold";
-                        detalleAsignacionEl.className = "font-medium text-amber-800 pl-6 leading-relaxed";
+                        detalleAsignacionEl.className = "font-medium text-amber-900 pl-4 border-l-2 border-amber-400 leading-relaxed";
                         tituloAlerta.innerHTML = `⚠️ Pendiente de autorización por parte del área.`;
                     }
 
@@ -900,7 +905,7 @@
                 dinero: dineroTotalFinal
             };
 
-            msgDiv.className = "text-xs font-medium text-center text-blue-700";
+            msgDiv.className = "text-xs font-medium text-center text-blue-700 p-3 rounded-xl bg-blue-50";
             msgDiv.textContent = "Guardando información en la base de datos...";
             msgDiv.classList.remove('hidden');
 
@@ -919,7 +924,7 @@
             form.submit();
 
             setTimeout(() => {
-                msgDiv.className = "text-xs font-medium text-center text-emerald-600";
+                msgDiv.className = "text-xs font-medium text-center text-emerald-700 p-3 rounded-xl bg-emerald-50";
                 msgDiv.textContent = "¡Vacaciones enviadas y registradas con éxito en la base de datos!";
                 alert(mensajeExitoDetallado);
                 
