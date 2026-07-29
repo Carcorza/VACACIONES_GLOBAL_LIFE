@@ -335,31 +335,40 @@
             let alertaDinero = document.getElementById('alertaExcesoDinero');
             let seccionDinero = document.getElementById('seccionCompensacionDinero');
 
-            if ((i1 && d1 > 0) || (i2 && d2 > 0) || (i3 && d3 > 0)) {
-                seccionDinero.classList.remove('hidden');
-            } else {
-                seccionDinero.classList.add('hidden');
-            }
-
-            let totalBloques = d1 + d2 + d3;
             let sec2 = document.getElementById('seccionBloque2');
             let sec3 = document.getElementById('seccionBloque3');
 
-            if (esAdministrativo) {
-                if ((d1 > 0 && i1) || (d2 > 0 && i2) || b2iOrig) {
-                    sec2.classList.remove('hidden');
-                } else {
-                    sec2.classList.add('hidden');
-                }
+            // CONTROL ESTRICTO: SI EL BLOQUE 1 YA TIENE 15 DÍAS O LOS DÍAS TOTALES LLEGAN A 15, SE OCULTAN LOS DEMÁS BLOQUES Y EL DINERO
+            let totalBloques = d1 + d2 + d3;
 
-                if ((d2 > 0 && i2) || (d3 > 0 && i3) || b3iOrig) {
-                    sec3.classList.remove('hidden');
-                } else {
-                    sec3.classList.add('hidden');
-                }
-            } else {
+            if (d1 >= 15 || totalBloques >= 15) {
                 sec2.classList.add('hidden');
                 sec3.classList.add('hidden');
+                seccionDinero.classList.add('hidden');
+                inputDinero.value = 0;
+            } else {
+                if ((i1 && d1 > 0) || (i2 && d2 > 0) || (i3 && d3 > 0)) {
+                    seccionDinero.classList.remove('hidden');
+                } else {
+                    seccionDinero.classList.add('hidden');
+                }
+
+                if (esAdministrativo) {
+                    if ((d1 > 0 && i1) || (d2 > 0 && i2) || b2iOrig) {
+                        sec2.classList.remove('hidden');
+                    } else {
+                        sec2.classList.add('hidden');
+                    }
+
+                    if ((d2 > 0 && i2) || (d3 > 0 && i3) || b3iOrig) {
+                        sec3.classList.remove('hidden');
+                    } else {
+                        sec3.classList.add('hidden');
+                    }
+                } else {
+                    sec2.classList.add('hidden');
+                    sec3.classList.add('hidden');
+                }
             }
 
             let dinTotal = parseInt(inputDinero.value) || 0;
@@ -516,7 +525,6 @@
                         document.getElementById('seccionBloque3').classList.add('hidden');
                     }
 
-                    // MAPEO EXACTO Y ORDENADO DE LOS TRES BLOQUES SEGÚN LA BASE DE DATOS
                     let b1Inicio = normalizarFechaFormato(encontrado['INICIO VACACIONES'] || '');
                     let b1Fin = normalizarFechaFormato(encontrado['FIN VACACIONES'] || '');
                     let b1Regreso = normalizarFechaFormato(encontrado['REGRESO A LABORAR'] || '');
@@ -782,7 +790,6 @@
             const msgDiv = document.getElementById('formMsg');
             let hoyStr = new Date().toISOString().split('T')[0];
             
-            // BLINDAJE INMUTABLE ABSOLUTO: Si un bloque es pasado, se fuerza estrictamente su valor original de la base de datos
             let b1iOriginal = normalizarFechaFormato(empleadoActual['INICIO VACACIONES'] || '');
             let b1i = (b1iOriginal && b1iOriginal < hoyStr) ? b1iOriginal : document.getElementById('b1Inicio').value;
             let b1f = (b1iOriginal && b1iOriginal < hoyStr) ? normalizarFechaFormato(empleadoActual['FIN VACACIONES'] || '') : document.getElementById('b1Fin').value;
@@ -807,7 +814,7 @@
                 return;
             }
 
-            let dineroTotalFinal = parseInt(document.getElementById('inputDineroNuevos').value) || 0;
+            let dineroTotalFinal = document.getElementById('seccionCompensacionDinero').classList.contains('hidden') ? 0 : (parseInt(document.getElementById('inputDineroNuevos').value) || 0);
             if (dineroTotalFinal > 7) {
                 alert("⚠️ Política Institucional: El máximo permitido para compensación en dinero es de 7 días.");
                 document.getElementById('inputDineroNuevos').value = 7;
