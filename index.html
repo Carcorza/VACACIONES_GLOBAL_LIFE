@@ -209,7 +209,7 @@
 
     <script>
         const sheetID = '1pCFrPSBBh3yxhiBE13GXHUyHADCWH9IG01Wkk7hs-mU';
-        const appsScriptURL = 'https://script.google.com/macros/s/AKfycbx18pss4mD9ZpLnhC9JzQHDMANU-qfkwyCzPwbvKW-0NUpmct06Deqjw86t1qC-AO1F/exec';
+        const appsScriptURL = 'https://script.google.com/macros/s/AKfycbypdi_7gNWT4wbhe7UJq84jnVNqXtq_Qnz1-99AyIkg7CFjwP5VXKtDMWiqCPNyTk15/exec';
         let empleadoActual = null;
         let todosLosRegistrosGlobal = [];
         let esAdministrativo = false;
@@ -230,13 +230,46 @@
             return mesesNombres[d.getMonth()] || "";
         }
 
+        function extraerFechaHojaISO(celdaObj) {
+            if (!celdaObj) return "";
+
+            let strVal = "";
+            if (celdaObj.f) strVal = String(celdaObj.f).trim();
+            else if (celdaObj.v !== undefined && celdaObj.v !== null) strVal = String(celdaObj.v).trim();
+
+            if (strVal.includes('Date(')) {
+                let match = strVal.match(/Date\((\d+),(\d+),(\d+)\)/);
+                if (match) {
+                    let yyyy = match[1];
+                    let mm = String(parseInt(match[2], 10) + 1).padStart(2, '0');
+                    let dd = String(match[3]).padStart(2, '0');
+                    return `${yyyy}-${mm}-${dd}`;
+                }
+            }
+
+            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(strVal)) {
+                let p = strVal.split('/');
+                let dd = p[0].padStart(2, '0');
+                let mm = p[1].padStart(2, '0');
+                let yyyy = p[2];
+                return `${yyyy}-${mm}-${dd}`;
+            }
+
+            if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(strVal)) {
+                let p = strVal.split('-');
+                return `${p[0]}-${p[1].padStart(2, '0')}-${p[2].padStart(2, '0')}`;
+            }
+
+            return "";
+        }
+
         function normalizarFechaFormato(fechaVal) {
             if (!fechaVal) return "";
             let str = String(fechaVal).trim();
             
-            if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
+            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(str)) {
                 let partes = str.split('/');
-                return `${partes[2]}-${partes[1]}-${partes[0]}`;
+                return `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
             }
 
             let d = new Date(str);
@@ -338,7 +371,6 @@
             let sec2 = document.getElementById('seccionBloque2');
             let sec3 = document.getElementById('seccionBloque3');
 
-            // CONTROL ESTRICTO: SI EL BLOQUE 1 YA TIENE 15 DÍAS O LOS DÍAS TOTALES LLEGAN A 15, SE OCULTAN LOS DEMÁS BLOQUES Y EL DINERO
             let totalBloques = d1 + d2 + d3;
 
             if (d1 >= 15 || totalBloques >= 15) {
@@ -441,10 +473,10 @@
 
         function validarCedulaSistema() {
             const cedulaInput = document.getElementById('loginCedula').value.trim();
-            const expedicionInput = document.getElementById('loginExpedicion').value.trim();
+            const expedicionInputRaw = document.getElementById('loginExpedicion').value.trim(); // Formato HTML: YYYY-MM-DD
             const errDiv = document.getElementById('loginError');
 
-            if (!cedulaInput || !expedicionInput) {
+            if (!cedulaInput || !expedicionInputRaw) {
                 errDiv.textContent = "Por favor ingrese su número de cédula y la fecha de expedición.";
                 errDiv.classList.remove('hidden');
                 return;
@@ -463,7 +495,7 @@
             script.src = jsonpURL;
             script.onerror = function() {
                 errDiv.textContent = "Error al conectar con la hoja de Google Sheets.";
-                errDiv.classList.add('hidden');
+                errDiv.classList.remove('hidden');
             };
 
             window.handleVacacionesData = function(response) {
@@ -478,8 +510,7 @@
                             row.c.forEach((cell, index) => {
                                 let colName = cols[index];
                                 if (colName) {
-                                    let val = cell ? (cell.f !== undefined && cell.f !== null ? cell.f : (cell.v !== undefined && cell.v !== null ? cell.v : '')) : '';
-                                    obj[colName.trim().toUpperCase()] = String(val).trim();
+                                    obj[colName.trim().toUpperCase()] = cell;
                                 }
                             });
                         }
@@ -488,12 +519,24 @@
 
                     todosLosRegistrosGlobal = registros;
 
-                    let encontrado = registros.find(item => {
-                        let doc = String(item['DOCUMENTO'] || item['DOC'] || '').trim();
-                        let fExpRaw = item['F_EXPEDICION'] || item['F_EXPEDICIÓN'] || item['FECHA EXPEDICION'] || '';
-                        let fExpNormalizada = normalizarFechaFormato(fExpRaw);
+                    let cedulaLimpia = cedulaInput.replace(/\D/g, '');
 
-                        return doc === cedulaInput && fExpNormalizada === expedicionInput;
+                    let encontrado = registros.find(item => {
+                        // BÚSQUEDA DE DOCUMENTO EN "IDENTIFICACION"
+                        let cellDoc = item['IDENTIFICACION'] || item['DOCUMENTO'] || item['DOC'];
+                        let docRaw = cellDoc ? (cellDoc.f || cellDoc.v || '') : '';
+                        let docLimpio = String(docRaw).replace(/\D/g, '');
+
+                        // BÚSQUEDA EN "F EXP CEDULA"
+                        let keyExp = Object.keys(item).find(k => k.includes('F EXP CEDULA') || k.includes('EXP') || k.includes('CEDULA'));
+                        let cellExp = keyExp ? item[keyExp] : null;
+
+                        let fechaHojaISO = extraerFechaHojaISO(cellExp); // Devuelve YYYY-MM-DD
+                        
+                        let coincideDoc = (docLimpio === cedulaLimpia || String(docRaw).trim() === cedulaInput);
+                        let coincideFecha = (fechaHojaISO === expedicionInputRaw);
+
+                        return coincideDoc && coincideFecha;
                     });
 
                     if (!encontrado) {
@@ -502,14 +545,24 @@
                         return;
                     }
 
-                    empleadoActual = encontrado;
+                    // Aplanamos el objeto para uso interno
+                    let empleadoSimple = {};
+                    for (let k in encontrado) {
+                        let c = encontrado[k];
+                        empleadoSimple[k] = c ? (c.f !== undefined && c.f !== null ? String(c.f) : (c.v !== undefined && c.v !== null ? String(c.v) : '')) : '';
+                    }
+
+                    empleadoActual = empleadoSimple;
 
                     let areaEmpleado = "";
-                    for (let key in encontrado) {
-                        if (key.includes('AREA') || key === 'E' || key === 'F') {
-                            let valArea = String(encontrado[key]).trim().toUpperCase();
-                            if(valArea === 'ADMINISTRATIVA' || valArea === 'OPERATIVA' || valArea === 'DOMICILIARIA') {
-                                areaEmpleado = valArea;
+                    for (let key in empleadoSimple) {
+                        if (key.includes('DEPENDENCIA') || key.includes('CARGO') || key.includes('AREA')) {
+                            let valArea = String(empleadoSimple[key]).trim().toUpperCase();
+                            if (valArea.includes('ADMINISTRATIV') || valArea.includes('GERENCIA')) {
+                                areaEmpleado = 'ADMINISTRATIVA';
+                                break;
+                            } else if (valArea.includes('DOMICILIARIO') || valArea.includes('AMBULANCIA') || valArea.includes('OPERATIV')) {
+                                areaEmpleado = 'OPERATIVA';
                                 break;
                             }
                         }
@@ -525,25 +578,24 @@
                         document.getElementById('seccionBloque3').classList.add('hidden');
                     }
 
-                    let b1Inicio = normalizarFechaFormato(encontrado['INICIO VACACIONES'] || '');
-                    let b1Fin = normalizarFechaFormato(encontrado['FIN VACACIONES'] || '');
-                    let b1Regreso = normalizarFechaFormato(encontrado['REGRESO A LABORAR'] || '');
+                    let b1Inicio = normalizarFechaFormato(empleadoSimple['INICIO VACACIONES'] || '');
+                    let b1Fin = normalizarFechaFormato(empleadoSimple['FIN VACACIONES'] || '');
+                    let b1Regreso = normalizarFechaFormato(empleadoSimple['REGRESO A LABORAR'] || '');
                     
-                    let b2Inicio = normalizarFechaFormato(encontrado['SEGUNDA FECHA'] || '');
-                    let b2Fin = normalizarFechaFormato(encontrado['FIN SEGUNDA FECHA'] || '');
-                    let b2Regreso = normalizarFechaFormato(encontrado['REGRESO SEGUNDA FECHA'] || '');
+                    let b2Inicio = normalizarFechaFormato(empleadoSimple['SEGUNDA FECHA'] || '');
+                    let b2Fin = normalizarFechaFormato(empleadoSimple['FIN SEGUNDA FECHA'] || '');
+                    let b2Regreso = normalizarFechaFormato(empleadoSimple['REGRESO SEGUNDA FECHA'] || '');
 
-                    let b3Inicio = normalizarFechaFormato(encontrado['TERCER FECHA'] || '');
-                    let b3Fin = normalizarFechaFormato(encontrado['FIN TERCERA FECHA'] || encontrado['FIN TERCER FECHA'] || '');
-                    let b3Regreso = normalizarFechaFormato(encontrado['REGRESO TERCERA FEHCA'] || encontrado['REGRESO TERCERA FECHA'] || '');
+                    let b3Inicio = normalizarFechaFormato(empleadoSimple['TERCER FECHA'] || '');
+                    let b3Fin = normalizarFechaFormato(empleadoSimple['FIN TERCERA FECHA'] || empleadoSimple['FIN TERCER FECHA'] || '');
+                    let b3Regreso = normalizarFechaFormato(empleadoSimple['REGRESO TERCERA FEHCA'] || empleadoSimple['REGRESO TERCERA FECHA'] || '');
                     
                     let dineroBaseOriginal = 0;
-                    for (let key in encontrado) {
-                        if (key.includes('DINERO') || key === 'Q' || key === 'R') {
-                            let valStr = String(encontrado[key]).trim();
+                    for (let key in empleadoSimple) {
+                        if (key.includes('DINERO')) {
+                            let valStr = String(empleadoSimple[key]).trim();
                             if (valStr !== "" && !isNaN(valStr)) {
-                                let valNum = parseInt(valStr.replace(/\D/g, '')) || 0;
-                                dineroBaseOriginal = valNum;
+                                dineroBaseOriginal = parseInt(valStr.replace(/\D/g, '')) || 0;
                                 break;
                             }
                         }
@@ -552,17 +604,17 @@
                     document.getElementById('inputDineroNuevos').value = dineroBaseOriginal;
 
                     let estadoAutorizadoColQ = "";
-                    for (let key in encontrado) {
-                        if (key === 'AUTORIZADO' || key.includes('AUTORIZADO')) {
-                            estadoAutorizadoColQ = String(encontrado[key]).trim().toUpperCase();
+                    for (let key in empleadoSimple) {
+                        if (key.includes('AUTORIZADO')) {
+                            estadoAutorizadoColQ = String(empleadoSimple[key]).trim().toUpperCase();
                             break;
                         }
                     }
 
                     let valorModificar = "";
-                    for (let key in encontrado) {
-                        if (key.includes('MODIFICAR') || key === 'T') {
-                            valorModificar = encontrado[key];
+                    for (let key in empleadoSimple) {
+                        if (key.includes('MODIFICAR')) {
+                            valorModificar = empleadoSimple[key];
                             break;
                         }
                     }
@@ -624,7 +676,6 @@
                         tituloAlerta.innerHTML = `⚠️ Pendiente de autorización por parte del área.`;
                     }
 
-                    // CARGA Y BLOQUEO DEL BLOQUE 1
                     if (tieneBloque1) {
                         document.getElementById('b1Dias').value = contarDiasHabilesEntreFechas(b1Inicio, b1Fin);
                         document.getElementById('b1Inicio').value = b1Inicio;
@@ -641,7 +692,6 @@
                         }
                     }
 
-                    // CARGA Y BLOQUEO DEL BLOQUE 2
                     if (tieneBloque2 && esAdministrativo) {
                         document.getElementById('b2Dias').value = contarDiasHabilesEntreFechas(b2Inicio, b2Fin);
                         document.getElementById('b2Inicio').value = b2Inicio;
@@ -659,7 +709,6 @@
                         }
                     }
 
-                    // CARGA Y BLOQUEO DEL BLOQUE 3
                     if (tieneBloque3 && esAdministrativo) {
                         document.getElementById('b3Dias').value = contarDiasHabilesEntreFechas(b3Inicio, b3Fin);
                         document.getElementById('b3Inicio').value = b3Inicio;
@@ -713,13 +762,13 @@
 
                     document.getElementById('loginScreen').classList.add('hidden');
                     document.getElementById('mainAppContainer').classList.remove('hidden');
-                    document.getElementById('welcomeTitle').textContent = `Bienvenido, ${empleadoActual['NOMBRE'] || 'Funcionario'}`;
+                    document.getElementById('welcomeTitle').textContent = `Bienvenido, ${empleadoSimple['NOMBRE COMPLETO'] || empleadoSimple['NOMBRE'] || 'Funcionario'}`;
                     document.getElementById('welcomeSubtitle').textContent = `Documento: ${cedulaInput} | Área: ${areaEmpleado || 'General'}`;
 
                 } catch (e) {
                     console.error(e);
                     errDiv.textContent = "Error al procesar los datos de la hoja.";
-                    errDiv.classList.add('hidden');
+                    errDiv.classList.remove('hidden');
                 }
             };
             document.head.appendChild(script);
@@ -727,13 +776,14 @@
 
         function validarCupoPorMesYJefe(fechasANuevas) {
             let miJefe = (empleadoActual['JEFE INMEDIATO'] || '').trim().toUpperCase();
-            let miDocumento = String(empleadoActual['DOCUMENTO'] || empleadoActual['DOC']).trim();
+            let miDocumento = String(empleadoActual['IDENTIFICACION'] || empleadoActual['DOCUMENTO'] || '').trim();
 
             if (!miJefe) return true;
 
             let totalPersonalDelJefe = 0;
             todosLosRegistrosGlobal.forEach(item => {
-                let compJefe = (item['JEFE INMEDIATO'] || '').trim().toUpperCase();
+                let cellJefe = item['JEFE INMEDIATO'];
+                let compJefe = cellJefe ? String(cellJefe.f || cellJefe.v || '').trim().toUpperCase() : '';
                 if (compJefe === miJefe) {
                     totalPersonalDelJefe++;
                 }
@@ -752,17 +802,20 @@
                 let contadorMes = 0;
 
                 for (let comp of todosLosRegistrosGlobal) {
-                    let compDoc = String(comp['DOCUMENTO'] || comp['DOC']).trim();
-                    let compJefe = (comp['JEFE INMEDIATO'] || '').trim().toUpperCase();
+                    let cellDoc = comp['IDENTIFICACION'] || comp['DOCUMENTO'];
+                    let compDoc = cellDoc ? String(cellDoc.f || cellDoc.v || '').trim() : '';
+
+                    let cellJefe = comp['JEFE INMEDIATO'];
+                    let compJefe = cellJefe ? String(cellJefe.f || cellJefe.v || '').trim().toUpperCase() : '';
 
                     if (compDoc === miDocumento) continue;
 
                     if (compJefe === miJefe) {
-                        let bloquesComp = [
-                            { ini: normalizarFechaFormato(comp['INICIO VACACIONES']), fin: normalizarFechaFormato(comp['FIN VACACIONES']) },
-                            { ini: normalizarFechaFormato(comp['SEGUNDA FECHA']), fin: normalizarFechaFormato(comp['FIN SEGUNDA FECHA']) },
-                            { ini: normalizarFechaFormato(comp['TERCER FECHA']), fin: normalizarFechaFormato(comp['FIN TERCERA FECHA'] || comp['FIN TERCER FECHA']) }
-                        ];
+                        let b1 = extraerFechaHojaISO(comp['INICIO VACACIONES']);
+                        let b2 = extraerFechaHojaISO(comp['SEGUNDA FECHA']);
+                        let b3 = extraerFechaHojaISO(comp['TERCER FECHA']);
+
+                        let bloquesComp = [{ ini: b1 }, { ini: b2 }, { ini: b3 }];
 
                         for (let b of bloquesComp) {
                             if (b.ini) {
@@ -874,7 +927,7 @@
             }
 
             let payload = {
-                documento: empleadoActual['DOCUMENTO'] || empleadoActual['DOC'],
+                documento: empleadoActual['IDENTIFICACION'] || empleadoActual['DOCUMENTO'] || empleadoActual['DOC'],
                 b1Inicio: b1i,
                 b1Fin: b1f,
                 b1Regreso: b1r,
@@ -911,7 +964,7 @@
                 alert(mensajeExitoDetallado);
                 
                 setTimeout(() => {
-                    document.getElementById('loginCedula').value = empleadoActual['DOCUMENTO'] || empleadoActual['DOC'];
+                    document.getElementById('loginCedula').value = empleadoActual['IDENTIFICACION'] || empleadoActual['DOCUMENTO'];
                     validarCedulaSistema();
                     msgDiv.classList.add('hidden');
                 }, 1200);
