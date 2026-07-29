@@ -128,8 +128,8 @@
                         </div>
                     </div>
 
-                    <!-- Bloque 2 (Solo Administrativos) -->
-                    <div id="seccionBloque2" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 border-b pb-4 border-slate-200 items-end hidden">
+                    <!-- Bloque 2 -->
+                    <div id="seccionBloque2" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 border-b pb-4 border-slate-200 items-end">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 2 - Días Hábiles</label>
                             <input type="number" id="b2Dias" min="1" max="15" placeholder="Ej. 3" oninput="actualizarBloquePorDias(2)" class="w-full text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none">
@@ -148,7 +148,7 @@
                         </div>
                     </div>
 
-                    <!-- Bloque 3 (Solo Administrativos) -->
+                    <!-- Bloque 3 -->
                     <div id="seccionBloque3" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 items-end hidden">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Bloque 3 - Días Hábiles</label>
@@ -169,11 +169,11 @@
                     </div>
                 </div>
 
-                <!-- BLOQUE: COMPENSACIÓN EN DINERO (Oculto hasta tener días e inicio en Bloque 1) -->
+                <!-- BLOQUE: COMPENSACIÓN EN DINERO -->
                 <div id="seccionCompensacionDinero" class="space-y-3 p-4 sm:p-5 bg-slate-50/70 rounded-xl border border-slate-200 hidden">
-                    <h4 class="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider">Compensación en Dinero (Máximo 7 días)</h4>
+                    <h4 class="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wider">Compensación en Dinero (Máximo 7 días en total)</h4>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Días a Compensar (Nuevos a solicitar)</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Días a Compensar (Total / Solicitados)</label>
                         <input type="number" id="inputDineroNuevos" min="0" max="7" value="0" oninput="actualizarAcumuladoDinero()" class="w-full sm:w-1/2 text-sm border border-slate-300 rounded-xl px-3.5 py-2.5 bg-white font-bold text-blue-700 focus:ring-2 focus:ring-blue-600 focus:outline-none">
                     </div>
                     <div id="alertaExcesoDinero" class="text-xs text-rose-600 font-semibold hidden">
@@ -181,7 +181,7 @@
                     </div>
                     <div class="text-xs sm:text-sm text-slate-700 font-medium bg-blue-50/80 p-3.5 rounded-xl border border-blue-100 flex flex-wrap justify-between items-center gap-2">
                         <span>Total acumulado en dinero que se guardará:</span>
-                        <span id="labelTotalDineroAcumulado" class="font-bold text-blue-900 text-sm">0 días (0 previos + 0 nuevos)</span>
+                        <span id="labelTotalDineroAcumulado" class="font-bold text-blue-900 text-sm">0 días en total</span>
                     </div>
                 </div>
 
@@ -211,7 +211,6 @@
         const sheetID = '1pCFrPSBBh3yxhiBE13GXHUyHADCWH9IG01Wkk7hs-mU';
         const appsScriptURL = 'https://script.google.com/macros/s/AKfycbx18pss4mD9ZpLnhC9JzQHDMANU-qfkwyCzPwbvKW-0NUpmct06Deqjw86t1qC-AO1F/exec';
         let empleadoActual = null;
-        let dineroBaseOriginal = 0;
         let todosLosRegistrosGlobal = [];
         let esAdministrativo = false;
 
@@ -222,8 +221,13 @@
 
         function obtenerNombreMes(fechaStr) {
             if (!fechaStr) return "";
+            let parts = fechaStr.split('-');
+            if (parts.length === 3) {
+                let mesIndex = parseInt(parts[1], 10) - 1;
+                return mesesNombres[mesIndex] || "";
+            }
             let d = new Date(fechaStr + 'T00:00:00');
-            return mesesNombres[d.getMonth()];
+            return mesesNombres[d.getMonth()] || "";
         }
 
         function normalizarFechaFormato(fechaVal) {
@@ -311,88 +315,25 @@
             let d2 = parseInt(document.getElementById('b2Dias').value) || 0;
             let i2 = document.getElementById('b2Inicio').value;
             let d3 = parseInt(document.getElementById('b3Dias').value) || 0;
+            let i3 = document.getElementById('b3Inicio').value;
             let inputDinero = document.getElementById('inputDineroNuevos');
             let alertaDinero = document.getElementById('alertaExcesoDinero');
             let seccionDinero = document.getElementById('seccionCompensacionDinero');
 
-            // REGLA ESTRICTA: La sección de dinero solo aparece si hay días e inicio en el Bloque 1
-            if (i1 && d1 > 0) {
+            if ((i1 && d1 > 0) || (i2 && d2 > 0) || (i3 && d3 > 0)) {
                 seccionDinero.classList.remove('hidden');
             } else {
                 seccionDinero.classList.add('hidden');
-                inputDinero.value = 0;
             }
 
-            if (!esAdministrativo) {
-                if (i1) {
-                    if (d1 < 8 && d1 > 0) {
-                        alert("⚠️ Política Institucional: Para personal no administrativo, el tiempo de descanso debe ser de al menos 8 días.");
-                        document.getElementById('b1Dias').value = 8;
-                        d1 = 8;
-                        let res1 = calcularFechasHabiles(i1, 8);
-                        document.getElementById('b1Fin').value = res1.fin;
-                        document.getElementById('b1Regreso').value = res1.regreso;
-                    }
-                    
-                    if (d1 >= 8) {
-                        let diasRestantesDinero = 15 - d1;
-                        if (diasRestantesDinero > 7) diasRestantesDinero = 7;
-                        inputDinero.value = diasRestantesDinero;
-                    }
-                } else {
-                    inputDinero.value = 0;
-                }
-            }
-
-            let dinNuevos = parseInt(inputDinero.value) || 0;
-
-            if (dinNuevos > 7) {
-                alert("⚠️ Política Institucional: El máximo permitido para compensación en dinero es de 7 días.");
-                inputDinero.value = 7;
-                dinNuevos = 7;
-                alertaDinero.classList.remove('hidden');
-            } else if (dinNuevos < 0) {
-                inputDinero.value = 0;
-                dinNuevos = 0;
-                alertaDinero.classList.add('hidden');
-            } else {
-                alertaDinero.classList.add('hidden');
-            }
-
+            let totalBloques = d1 + d2 + d3;
             let sec2 = document.getElementById('seccionBloque2');
             let sec3 = document.getElementById('seccionBloque3');
 
-            let totalBloques = d1;
-
             if (esAdministrativo) {
-                if (d1 > 0 && i1 && document.getElementById('b1Fin').value && totalBloques < 15) {
-                    sec2.classList.remove('hidden');
-                    totalBloques += d2;
-                } else {
-                    sec2.classList.add('hidden');
-                    document.getElementById('b2Dias').value = '';
-                    document.getElementById('b2Inicio').value = '';
-                    document.getElementById('b2Fin').value = '';
-                    document.getElementById('b2Regreso').value = '';
-                    d2 = 0;
-                    sec3.classList.add('hidden');
-                    document.getElementById('b3Dias').value = '';
-                    document.getElementById('b3Inicio').value = '';
-                    document.getElementById('b3Fin').value = '';
-                    document.getElementById('b3Regreso').value = '';
-                    d3 = 0;
-                }
-
-                if (!sec2.classList.contains('hidden') && d2 > 0 && i2 && document.getElementById('b2Fin').value && totalBloques < 15) {
+                sec2.classList.remove('hidden');
+                if ((d1 > 0 && i1 && document.getElementById('b1Fin').value) || (d2 > 0 && i2 && document.getElementById('b2Fin').value)) {
                     sec3.classList.remove('hidden');
-                    totalBloques = d1 + d2 + d3;
-                } else {
-                    sec3.classList.add('hidden');
-                    document.getElementById('b3Dias').value = '';
-                    document.getElementById('b3Inicio').value = '';
-                    document.getElementById('b3Fin').value = '';
-                    document.getElementById('b3Regreso').value = '';
-                    d3 = 0;
                 }
             } else {
                 sec2.classList.add('hidden');
@@ -400,37 +341,39 @@
             }
 
             let maxPermitidoTotal = 15;
-            let granTotal = totalBloques + dineroBaseOriginal + dinNuevos;
+            let dinTotal = parseInt(inputDinero.value) || 0;
+
+            if (dinTotal > 7) {
+                alert("⚠️ Política Institucional: El máximo permitido para compensación en dinero es de 7 días.");
+                inputDinero.value = 7;
+                dinTotal = 7;
+                alertaDinero.classList.remove('hidden');
+            } else {
+                alertaDinero.classList.add('hidden');
+            }
+
+            let granTotal = totalBloques + dinTotal;
 
             if (granTotal > maxPermitidoTotal) {
                 let exceso = granTotal - maxPermitidoTotal;
-                if (dinNuevos >= exceso) {
-                    dinNuevos -= exceso;
-                    inputDinero.value = dinNuevos;
+                if (totalBloques >= exceso) {
+                    if (d3 >= exceso) { d3 -= exceso; document.getElementById('b3Dias').value = d3; actualizarBloquePorDias(3); }
+                    else if (d2 >= exceso) { d2 -= exceso; document.getElementById('b2Dias').value = d2; actualizarBloquePorDias(2); }
+                    else if (d1 >= exceso) { d1 -= exceso; document.getElementById('b1Dias').value = d1; actualizarBloquePorDias(1); }
                 } else {
-                    alert(`⚠️ La suma total de días entre bloques y dinero no puede superar los 15 días hábiles.`);
-                    if (esAdministrativo) {
-                        document.getElementById('b3Dias').value = '';
-                        document.getElementById('b3Inicio').value = '';
-                        document.getElementById('b3Fin').value = '';
-                        document.getElementById('b3Regreso').value = '';
-                    } else {
-                        document.getElementById('b1Dias').value = 8;
-                        document.getElementById('b1Inicio').value = '';
-                        document.getElementById('b1Fin').value = '';
-                        document.getElementById('b1Regreso').value = '';
-                        inputDinero.value = 0;
-                    }
+                    dinTotal -= exceso;
+                    inputDinero.value = dinTotal;
                 }
-                granTotal = 15;
+                totalBloques = (parseInt(document.getElementById('b1Dias').value) || 0) + 
+                               (parseInt(document.getElementById('b2Dias').value) || 0) + 
+                               (parseInt(document.getElementById('b3Dias').value) || 0);
+                granTotal = totalBloques + (parseInt(inputDinero.value) || 0);
             }
 
             document.getElementById('contadorTotalDias').textContent = `Total días bloques: ${totalBloques} / 15`;
-            
-            let totalAcumuladoDinero = dineroBaseOriginal + dinNuevos;
-            document.getElementById('labelTotalDineroAcumulado').textContent = `${totalAcumuladoDinero} días (${dineroBaseOriginal} previos + ${dinNuevos} nuevos)`;
+            document.getElementById('labelTotalDineroAcumulado').textContent = `${dinTotal} días en total`;
 
-            let pendientesBadge = 15 - totalBloques - totalAcumuladoDinero;
+            let pendientesBadge = 15 - totalBloques - dinTotal;
             if (pendientesBadge < 0) pendientesBadge = 0;
             document.getElementById('badgePendientes').textContent = `Días pendientes: ${pendientesBadge} / 15`;
         }
@@ -453,42 +396,18 @@
         function calcularBloquePorFechas(num) {
             let inicioInput = document.getElementById(`b${num}Inicio`);
             let inicio = inicioInput.value;
+            let diasInput = parseInt(document.getElementById(`b${num}Dias`).value) || 0;
             
-            if (!inicio) {
+            if (!inicio || diasInput <= 0) {
                 document.getElementById(`b${num}Fin`).value = '';
                 document.getElementById(`b${num}Regreso`).value = '';
                 actualizarGlobal();
                 return;
             }
 
-            if (num === 2) {
-                let b1Regreso = document.getElementById('b1Regreso').value;
-                if (b1Regreso && inicio < b1Regreso) {
-                    alert("⚠️ Error de cruce: El Bloque 2 no puede iniciar antes de la fecha de regreso del Bloque 1 (" + b1Regreso + ").");
-                    inicioInput.value = '';
-                    document.getElementById('b2Fin').value = '';
-                    document.getElementById('b2Regreso').value = '';
-                    actualizarGlobal();
-                    return;
-                }
-            } else if (num === 3) {
-                let b2Regreso = document.getElementById('b2Regreso').value;
-                if (b2Regreso && inicio < b2Regreso) {
-                    alert("⚠️ Error de cruce: El Bloque 3 no puede iniciar antes de la fecha de regreso del Bloque 2 (" + b2Regreso + ").");
-                    inicioInput.value = '';
-                    document.getElementById('b3Fin').value = '';
-                    document.getElementById('b3Regreso').value = '';
-                    actualizarGlobal();
-                    return;
-                }
-            }
-
-            let diasInput = parseInt(document.getElementById(`b${num}Dias`).value) || 0;
-            if (diasInput > 0) {
-                let res = calcularFechasHabiles(inicio, diasInput);
-                document.getElementById(`b${num}Fin`).value = res.fin;
-                document.getElementById(`b${num}Regreso`).value = res.regreso;
-            }
+            let res = calcularFechasHabiles(inicio, diasInput);
+            document.getElementById(`b${num}Fin`).value = res.fin;
+            document.getElementById(`b${num}Regreso`).value = res.regreso;
             actualizarGlobal();
         }
 
@@ -524,7 +443,7 @@
             script.src = jsonpURL;
             script.onerror = function() {
                 errDiv.textContent = "Error al conectar con la hoja de Google Sheets.";
-                errDiv.classList.remove('hidden');
+                errDiv.classList.add('hidden');
             };
 
             window.handleVacacionesData = function(response) {
@@ -580,23 +499,25 @@
                     if (esAdministrativo) {
                         document.getElementById('tituloSeccionBloques').textContent = "Fraccionamiento de Descanso (Hasta 3 Bloques - Área Administrativa)";
                         document.getElementById('inputDineroNuevos').removeAttribute('readonly');
+                        document.getElementById('seccionBloque2').classList.remove('hidden');
                     } else {
                         document.getElementById('tituloSeccionBloques').textContent = "Fraccionamiento de Descanso (1 Bloque Autorizado - Asignación Automática de Dinero)";
+                        document.getElementById('seccionBloque2').classList.add('hidden');
                     }
 
-                    let fInicio = encontrado['INICIO VACACIONES'] || '';
-                    let fFin = encontrado['FIN VACACIONES'] || '';
-                    let fRegreso = encontrado['REGRESO A LABORAR'] || '';
+                    let fInicio = normalizarFechaFormato(encontrado['INICIO VACACIONES'] || '');
+                    let fFin = normalizarFechaFormato(encontrado['FIN VACACIONES'] || '');
+                    let fRegreso = normalizarFechaFormato(encontrado['REGRESO A LABORAR'] || '');
                     
-                    let b2Inicio = encontrado['SEGUNDA FECHA'] || '';
-                    let b2Fin = encontrado['FIN SEGUNDA FECHA'] || '';
-                    let b2Regreso = encontrado['REGRESO SEGUNDA FECHA'] || '';
+                    let b2Inicio = normalizarFechaFormato(encontrado['SEGUNDA FECHA'] || '');
+                    let b2Fin = normalizarFechaFormato(encontrado['FIN SEGUNDA FECHA'] || '');
+                    let b2Regreso = normalizarFechaFormato(encontrado['REGRESO SEGUNDA FECHA'] || '');
 
-                    let b3Inicio = encontrado['TERCER FECHA'] || '';
-                    let b3Fin = encontrado['FIN TERCERA FECHA'] || encontrado['FIN TERCER FECHA'] || '';
-                    let b3Regreso = encontrado['REGRESO TERCERA FEHCA'] || encontrado['REGRESO TERCERA FECHA'] || '';
+                    let b3Inicio = normalizarFechaFormato(encontrado['TERCER FECHA'] || '');
+                    let b3Fin = normalizarFechaFormato(encontrado['FIN TERCERA FECHA'] || encontrado['FIN TERCER FECHA'] || '');
+                    let b3Regreso = normalizarFechaFormato(encontrado['REGRESO TERCERA FEHCA'] || encontrado['REGRESO TERCERA FECHA'] || '');
                     
-                    dineroBaseOriginal = 0;
+                    let dineroBaseOriginal = 0;
                     for (let key in encontrado) {
                         if (key.includes('DINERO') || key === 'Q' || key === 'R') {
                             let valStr = String(encontrado[key]).trim();
@@ -607,6 +528,8 @@
                             }
                         }
                     }
+
+                    document.getElementById('inputDineroNuevos').value = dineroBaseOriginal;
 
                     let estadoAutorizadoColQ = "";
                     for (let key in encontrado) {
@@ -636,9 +559,8 @@
                         let dBlock1 = contarDiasHabilesEntreFechas(fInicio, fFin);
                         diasProgramadosBase += dBlock1;
                         tieneBloque1 = true;
-                        let mesInicioB1 = obtenerNombreMes(fInicio);
                         let mesFinB1 = obtenerNombreMes(fFin);
-                        detalleTexto += `• Bloque 1: Del ${fInicio} al ${fFin} (${dBlock1} días hábiles - Regresa: ${fRegreso}) [Impacta nómina de: ${mesFinB1 || mesInicioB1}]<br>`;
+                        detalleTexto += `• Bloque 1: Del ${fInicio} al ${fFin} (${dBlock1} días hábiles - Regresa: ${fRegreso}) [Impacta nómina de: ${mesFinB1}]<br>`;
                     }
                     if (b2Inicio && b2Fin) {
                         let dBlock2 = contarDiasHabilesEntreFechas(b2Inicio, b2Fin);
@@ -683,32 +605,79 @@
                         tituloAlerta.innerHTML = `⚠️ Pendiente de autorización por parte del área.`;
                     }
 
+                    let hoyStr = new Date().toISOString().split('T')[0];
+
+                    document.getElementById('b1Inicio').setAttribute('min', hoyStr);
+                    document.getElementById('b2Inicio').setAttribute('min', hoyStr);
+                    document.getElementById('b3Inicio').setAttribute('min', hoyStr);
+
+                    // CARGAR BLOQUE 1
+                    if (tieneBloque1) {
+                        document.getElementById('b1Dias').value = contarDiasHabilesEntreFechas(fInicio, fFin);
+                        document.getElementById('b1Inicio').value = fInicio;
+                        document.getElementById('b1Fin').value = fFin;
+                        document.getElementById('b1Regreso').value = fRegreso;
+
+                        if (fFin && fFin < hoyStr) {
+                            document.getElementById('b1Dias').setAttribute('readonly', true);
+                            document.getElementById('b1Dias').classList.add('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                            document.getElementById('b1Inicio').setAttribute('readonly', true);
+                            document.getElementById('b1Inicio').classList.add('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                        } else {
+                            document.getElementById('b1Dias').removeAttribute('readonly');
+                            document.getElementById('b1Dias').classList.remove('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                            document.getElementById('b1Inicio').removeAttribute('readonly');
+                            document.getElementById('b1Inicio').classList.remove('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                        }
+                    }
+
+                    // CARGAR BLOQUE 2
+                    if (tieneBloque2 && esAdministrativo) {
+                        document.getElementById('b2Dias').value = contarDiasHabilesEntreFechas(b2Inicio, b2Fin);
+                        document.getElementById('b2Inicio').value = b2Inicio;
+                        document.getElementById('b2Fin').value = b2Fin;
+                        document.getElementById('b2Regreso').value = b2Regreso;
+
+                        if (b2Fin && b2Fin < hoyStr) {
+                            document.getElementById('b2Dias').setAttribute('readonly', true);
+                            document.getElementById('b2Dias').classList.add('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                            document.getElementById('b2Inicio').setAttribute('readonly', true);
+                            document.getElementById('b2Inicio').classList.add('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                        } else {
+                            document.getElementById('b2Dias').removeAttribute('readonly');
+                            document.getElementById('b2Dias').classList.remove('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                            document.getElementById('b2Inicio').removeAttribute('readonly');
+                            document.getElementById('b2Inicio').classList.remove('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                        }
+                    }
+
+                    // CARGAR BLOQUE 3
+                    if (tieneBloque3 && esAdministrativo) {
+                        document.getElementById('b3Dias').value = contarDiasHabilesEntreFechas(b3Inicio, b3Fin);
+                        document.getElementById('b3Inicio').value = b3Inicio;
+                        document.getElementById('b3Fin').value = b3Fin;
+                        document.getElementById('b3Regreso').value = b3Regreso;
+                        document.getElementById('seccionBloque3').classList.remove('hidden');
+
+                        if (b3Fin && b3Fin < hoyStr) {
+                            document.getElementById('b3Dias').setAttribute('readonly', true);
+                            document.getElementById('b3Dias').classList.add('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                            document.getElementById('b3Inicio').setAttribute('readonly', true);
+                            document.getElementById('b3Inicio').classList.add('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                        } else {
+                            document.getElementById('b3Dias').removeAttribute('readonly');
+                            document.getElementById('b3Dias').classList.remove('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                            document.getElementById('b3Inicio').removeAttribute('readonly');
+                            document.getElementById('b3Inicio').classList.remove('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+                        }
+                    }
+
                     if (detalleTexto !== "") {
                         document.getElementById('detalleAsignacion').innerHTML = detalleTexto;
                         document.getElementById('badgePendientes').textContent = `Días pendientes: ${diasPendientesIniciales} / 15`;
                         contenedorAlerta.classList.remove('hidden');
                         document.getElementById('panelPendientesGeneral').classList.add('hidden');
 
-                        if (tieneBloque1) {
-                            document.getElementById('b1Dias').value = contarDiasHabilesEntreFechas(fInicio, fFin);
-                            document.getElementById('b1Inicio').value = fInicio;
-                            document.getElementById('b1Fin').value = fFin;
-                            document.getElementById('b1Regreso').value = fRegreso;
-                        }
-                        if (tieneBloque2 && esAdministrativo) {
-                            document.getElementById('b2Dias').value = contarDiasHabilesEntreFechas(b2Inicio, b2Fin);
-                            document.getElementById('b2Inicio').value = b2Inicio;
-                            document.getElementById('b2Fin').value = b2Fin;
-                            document.getElementById('b2Regreso').value = b2Regreso;
-                        }
-                        if (tieneBloque3 && esAdministrativo) {
-                            document.getElementById('b3Dias').value = contarDiasHabilesEntreFechas(b3Inicio, b3Fin);
-                            document.getElementById('b3Inicio').value = b3Inicio;
-                            document.getElementById('b3Fin').value = b3Fin;
-                            document.getElementById('b3Regreso').value = b3Regreso;
-                        }
-
-                        document.getElementById('inputDineroNuevos').value = 0;
                         actualizarGlobal();
 
                         if (diasPendientesIniciales === 0) {
@@ -784,9 +753,9 @@
 
                     if (compJefe === miJefe) {
                         let bloquesComp = [
-                            { ini: comp['INICIO VACACIONES'], fin: comp['FIN VACACIONES'] },
-                            { ini: comp['SEGUNDA FECHA'], fin: comp['FIN SEGUNDA FECHA'] },
-                            { ini: comp['TERCER FECHA'], fin: comp['FIN TERCERA FECHA'] || comp['FIN TERCER FECHA'] }
+                            { ini: normalizarFechaFormato(comp['INICIO VACACIONES']), fin: normalizarFechaFormato(comp['FIN VACACIONES']) },
+                            { ini: normalizarFechaFormato(comp['SEGUNDA FECHA']), fin: normalizarFechaFormato(comp['FIN SEGUNDA FECHA']) },
+                            { ini: normalizarFechaFormato(comp['TERCER FECHA']), fin: normalizarFechaFormato(comp['FIN TERCERA FECHA'] || comp['FIN TERCER FECHA']) }
                         ];
 
                         for (let b of bloquesComp) {
@@ -847,14 +816,12 @@
                 return;
             }
 
-            let nuevosDinero = parseInt(document.getElementById('inputDineroNuevos').value) || 0;
-            if (nuevosDinero > 7) {
+            let dineroTotalFinal = parseInt(document.getElementById('inputDineroNuevos').value) || 0;
+            if (dineroTotalFinal > 7) {
                 alert("⚠️ Política Institucional: El máximo permitido para compensación en dinero es de 7 días.");
                 document.getElementById('inputDineroNuevos').value = 7;
                 return;
             }
-
-            let dineroTotalFinal = dineroBaseOriginal + nuevosDinero;
 
             let d1 = (b1i && b1f) ? contarDiasHabilesEntreFechas(b1i, b1f) : 0;
             let d2 = (b2i && b2f) ? contarDiasHabilesEntreFechas(b2i, b2f) : 0;
@@ -862,15 +829,35 @@
 
             let totalDiasGlobal = d1 + d2 + d3 + dineroTotalFinal;
 
+            // NUEVA VALIDACIÓN: OBLIGAR A QUE SUMEN EXACTAMENTE 15 DÍAS
+            if (totalDiasGlobal < 15) {
+                let diasFaltantes = 15 - totalDiasGlobal;
+                alert(`⚠️ Faltan días por programar:\n\nLa suma total entre los bloques y la compensación en dinero es de ${totalDiasGlobal} días. Le hacen falta ${diasFaltantes} días para completar los 15 días hábiles obligatorios del periodo anual.`);
+                return;
+            }
+
             if (totalDiasGlobal > 15) {
                 alert(`🚫 ¡BLOQUEO DE SEGURIDAD!\n\nEl total combinado suma ${totalDiasGlobal} días, superando el límite legal anual de 15 días hábiles.`);
                 return;
             }
 
             let fechasAValidar = [];
-            if (b1i && b1f) fechasAValidar.push({ inicio: b1i, fin: b1f });
-            if (b2i && b2f) fechasAValidar.push({ inicio: b2i, fin: b2f });
-            if (b3i && b3f) fechasAValidar.push({ inicio: b3i, fin: b3f });
+            let hoyStr = new Date().toISOString().split('T')[0];
+
+            let b1FinOriginal = normalizarFechaFormato(empleadoActual['FIN VACACIONES'] || '');
+            if (b1i && b1f && !(b1FinOriginal && b1FinOriginal < hoyStr)) {
+                fechasAValidar.push({ inicio: b1i, fin: b1f });
+            }
+
+            let b2FinOriginal = normalizarFechaFormato(empleadoActual['FIN SEGUNDA FECHA'] || '');
+            if (b2i && b2f && !(b2FinOriginal && b2FinOriginal < hoyStr)) {
+                fechasAValidar.push({ inicio: b2i, fin: b2f });
+            }
+
+            let b3FinOriginal = normalizarFechaFormato(empleadoActual['FIN TERCERA FECHA'] || empleadoActual['FIN TERCER FECHA'] || '');
+            if (b3i && b3f && !(b3FinOriginal && b3FinOriginal < hoyStr)) {
+                fechasAValidar.push({ inicio: b3i, fin: b3f });
+            }
 
             if (fechasAValidar.length > 0) {
                 let pasaFiltro = validarCupoPorMesYJefe(fechasAValidar);
@@ -884,8 +871,8 @@
             else if (b1f) ultimoMesFinal = obtenerNombreMes(b1f);
 
             let mensajeExitoDetallado = `¡Vacaciones enviadas con éxito!\n\n`;
-            if (nuevosDinero > 0 && mesInicioStr) {
-                mensajeExitoDetallado += `• Los ${nuevosDinero} días liquidados en dinero se verán reflejados en la nómina del mes de ${mesInicioStr}.\n`;
+            if (dineroTotalFinal > 0 && mesInicioStr) {
+                mensajeExitoDetallado += `• Los ${dineroTotalFinal} días liquidados en dinero se verán reflejados en la nómina del mes de ${mesInicioStr}.\n`;
             }
             if (ultimoMesFinal) {
                 mensajeExitoDetallado += `• El cierre del periodo vacacional y último bloque programado corresponde a la nómina de ${ultimoMesFinal}.`;
